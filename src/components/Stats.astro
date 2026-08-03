@@ -21,23 +21,30 @@ import T from './T.astro';
   }
 
   .stat {
-    background: var(--bg-elevated);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 1.1rem 1.8rem;
+    padding: 1.2rem 2rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 160px;
+    min-width: 180px;
+    transition: border-color 0.3s ease;
+  }
+
+  .stat:hover {
+    border-color: var(--accent);
   }
 
   .value {
-    font-size: 1.6rem;
-    font-weight: 700;
+    font-size: 2rem;
+    font-weight: 800;
     background: linear-gradient(135deg, var(--accent), var(--accent-2));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    transition: background-image 0.4s ease;
   }
 
   .label {

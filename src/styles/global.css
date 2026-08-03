@@ -33,6 +33,83 @@ body {
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  position: relative;
+}
+
+/* Ambient-фон: несколько размытых цветных пятен, цвет берётся из фото (см. Hero.astro).
+   Анимируем только transform — блюр считается один раз на композитный слой, а не на каждый кадр. */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.aurora span {
+  position: absolute;
+  width: 46vmax;
+  height: 46vmax;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.35;
+  will-change: transform;
+  background: radial-gradient(circle at 30% 30%, var(--accent), transparent 70%);
+}
+
+.aurora span:nth-child(1) {
+  top: -18vmax;
+  left: -14vmax;
+  animation: drift-a 22s ease-in-out infinite alternate;
+}
+
+.aurora span:nth-child(2) {
+  bottom: -20vmax;
+  right: -16vmax;
+  background: radial-gradient(circle at 60% 40%, var(--accent-2), transparent 70%);
+  animation: drift-b 26s ease-in-out infinite alternate;
+}
+
+.aurora span:nth-child(3) {
+  top: 30%;
+  left: 50%;
+  width: 30vmax;
+  height: 30vmax;
+  opacity: 0.2;
+  animation: drift-c 30s ease-in-out infinite alternate;
+}
+
+@keyframes drift-a {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(8vmax, 6vmax) scale(1.15);
+  }
+}
+
+@keyframes drift-b {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(-6vmax, -8vmax) scale(1.1);
+  }
+}
+
+@keyframes drift-c {
+  from {
+    transform: translate(-50%, 0) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -4vmax) rotate(25deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora span {
+    animation: none;
+  }
 }
 
 img {
