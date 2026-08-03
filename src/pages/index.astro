@@ -1,0 +1,20 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import Bio from '../components/Bio.astro';
+import Stats from '../components/Stats.astro';
+import Socials from '../components/Socials.astro';
+import LangSwitch from '../components/LangSwitch.astro';
+import { profile } from '../data/profile';
+import { t } from '../data/i18n';
+---
+
+<Layout title={`${profile.name} — eFootball Mobile`} description={t.tagline.ru}>
+  <LangSwitch />
+  <main>
+    <Hero />
+    <Bio />
+    <Stats />
+    <Socials />
+  </main>
+</Layout>

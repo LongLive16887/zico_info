@@ -1,0 +1,12 @@
+# Деплой на VPS: docker compose up -d --build
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '5'
+    ports:
+      - '127.0.0.1:3010:80'

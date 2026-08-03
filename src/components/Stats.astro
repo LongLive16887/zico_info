@@ -1,0 +1,48 @@
+---
+import { profile } from '../data/profile';
+import { t } from '../data/i18n';
+import T from './T.astro';
+---
+
+<section class="stats">
+  <div class="stat reveal">
+    <span class="value">{profile.statValue}</span>
+    <span class="label"><T text={t.statsLabel} /></span>
+  </div>
+</section>
+
+<style>
+  .stats {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 0 1.5rem 2.5rem;
+  }
+
+  .stat {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 160px;
+  }
+
+  .value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .label {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 0.2rem;
+  }
+</style>

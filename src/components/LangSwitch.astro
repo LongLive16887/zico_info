@@ -1,0 +1,61 @@
+---
+import { langs } from '../data/i18n';
+---
+
+<div class="lang-switch">
+  {langs.map((l) => <button type="button" data-set-lang={l}>{l.toUpperCase()}</button>)}
+</div>
+
+<style>
+  .lang-switch {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.4rem;
+    z-index: 10;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.3rem;
+  }
+
+  button {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  button[aria-current='true'] {
+    background: var(--accent);
+    color: #fff;
+  }
+</style>
+
+<script>
+  const KEY = 'zico-lang';
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-set-lang]');
+
+  function apply(lang: string) {
+    document.documentElement.setAttribute('data-lang', lang);
+    buttons.forEach((b) => b.setAttribute('aria-current', String(b.dataset.setLang === lang)));
+  }
+
+  apply(document.documentElement.getAttribute('data-lang') || 'ru');
+
+  buttons.forEach((b) => {
+    b.addEventListener('click', () => {
+      const lang = b.dataset.setLang!;
+      localStorage.setItem(KEY, lang);
+      apply(lang);
+    });
+  });
+</script>

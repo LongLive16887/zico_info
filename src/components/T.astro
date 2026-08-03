@@ -1,0 +1,15 @@
+---
+import type { Lang } from '../data/i18n';
+
+interface Props {
+  text: Record<Lang, string>;
+  block?: boolean;
+}
+const { text, block } = Astro.props as Props;
+const cls = block ? 'i18n i18n-block' : 'i18n';
+---
+
+<span class={cls} data-lang="ru">{text.ru}</span><span class={cls} data-lang="uz">{text.uz}</span><span
+  class={cls}
+  data-lang="ky">{text.ky}</span
+>
