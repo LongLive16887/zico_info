@@ -1,6 +1,6 @@
 // Единственное место для правки контента визитки (кроме переводов — они в i18n.ts).
 export const profile = {
-  name: 'ZICO',
+  name: 'ZICO EFOOTBALL',
   photo: '/photo.jpg',
   statValue: '900+',
 };

@@ -117,6 +117,16 @@ img {
   display: block;
 }
 
+/* Весь контент — в один экран, без скролла, на любом размере. */
+.fit-screen {
+  min-height: 100svh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow-y: auto;
+}
+
 a {
   color: inherit;
   text-decoration: none;

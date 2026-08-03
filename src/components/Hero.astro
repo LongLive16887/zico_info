@@ -8,7 +8,7 @@ import T from './T.astro';
   <div class="photo-wrap reveal delay-0">
     <div class="ring"></div>
     <div class="hero-photo" id="hero-photo-tilt">
-      <img id="hero-photo-img" src={profile.photo} alt={profile.name} width="240" height="240" crossorigin="anonymous" />
+      <img id="hero-photo-img" src={profile.photo} alt={profile.name} width="120" height="120" crossorigin="anonymous" />
     </div>
   </div>
   <h1 class="reveal delay-1">{profile.name}</h1>
@@ -21,22 +21,23 @@ import T from './T.astro';
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 4.5rem 1.5rem 2.5rem;
-    gap: 1rem;
+    padding: clamp(0.8rem, 3vh, 1.6rem) 1.2rem clamp(0.6rem, 2vh, 1rem);
+    gap: 0.35rem;
   }
 
   .photo-wrap {
     position: relative;
-    width: 240px;
-    height: 240px;
+    width: clamp(84px, 16vh, 120px);
+    height: clamp(84px, 16vh, 120px);
     display: grid;
     place-items: center;
+    margin-bottom: 0.3rem;
   }
 
   /* Вращающееся кольцо со свечением вокруг фото — только transform, дёшево для GPU. */
   .ring {
     position: absolute;
-    inset: -14px;
+    inset: -8px;
     border-radius: 50%;
     background: conic-gradient(from 0deg, var(--accent), var(--accent-2), var(--accent));
     filter: blur(10px);
@@ -53,12 +54,12 @@ import T from './T.astro';
 
   .hero-photo {
     position: relative;
-    width: 240px;
-    height: 240px;
+    width: clamp(84px, 16vh, 120px);
+    height: clamp(84px, 16vh, 120px);
     border-radius: 50%;
     overflow: hidden;
     border: 3px solid var(--bg);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
     transform-style: preserve-3d;
     transition: transform 0.15s ease-out;
   }
@@ -70,15 +71,15 @@ import T from './T.astro';
   }
 
   h1 {
-    font-size: clamp(2rem, 6vw, 2.9rem);
-    margin: 0.2rem 0 0;
+    font-size: clamp(1.3rem, 3.4vh, 1.9rem);
+    margin: 0;
     letter-spacing: -0.02em;
     font-weight: 800;
   }
 
   .tagline {
     color: var(--muted);
-    font-size: 1.05rem;
+    font-size: clamp(0.8rem, 1.8vh, 0.95rem);
     margin: 0;
   }
 

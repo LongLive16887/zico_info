@@ -10,23 +10,24 @@ import T from './T.astro';
 
 <style>
   .bio {
-    max-width: 560px;
+    max-width: 460px;
     margin: 0 auto;
-    padding: 0 1.5rem 2.5rem;
+    padding: 0 1.2rem clamp(0.6rem, 2vh, 1.1rem);
     text-align: center;
   }
 
   h2 {
-    font-size: 1rem;
+    font-size: clamp(0.7rem, 1.4vh, 0.8rem);
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--muted);
-    margin: 0 0 0.6rem;
+    margin: 0 0 0.3rem;
   }
 
   p {
     margin: 0;
-    line-height: 1.6;
+    font-size: clamp(0.78rem, 1.7vh, 0.92rem);
+    line-height: 1.45;
     color: var(--text);
   }
 </style>
