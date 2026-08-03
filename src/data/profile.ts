@@ -1,7 +1,7 @@
 // Единственное место для правки контента визитки (кроме переводов — они в i18n.ts).
 export const profile = {
   name: 'ZICO',
-  photo: '/photo-placeholder.svg', // TODO: заменить на public/photo.jpg с реальным фото и поменять путь здесь
+  photo: '/photo.jpg',
   statValue: '900+',
 };
 
@@ -31,7 +31,7 @@ export const socials: SocialLink[] = [
     icon: 'telegram',
     color: '#29a9eb',
   },
-  { name: 'Donate', url: 'https://t.me/zicocoins', icon: 'donate', color: '#ff5b9e' },
-  { name: 'Shop', url: 'https://t.me/zicoshopkanal', icon: 'shop', color: '#3ddc84' },
+  { name: 'Coins Donate', url: 'https://t.me/zicocoins', icon: 'coins', color: '#ffd166' },
+  { name: 'Account Shop', url: 'https://t.me/zicoshopkanal', icon: 'shop', color: '#3ddc84' },
   { name: 'Premium', url: 'https://t.me/zicosinfo', icon: 'premium', color: '#ffd166' },
 ];

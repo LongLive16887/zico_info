@@ -126,12 +126,31 @@ import T from './T.astro';
     });
   }
 
-  // Извлекаем усреднённые цвета фото и красим ими --accent/--accent-2 — палитра сайта следует за фото.
+  // Извлекаем доминирующие НАСЫЩЕННЫЕ оттенки фото (не просто среднее — иначе яркие
+  // фото уходят в грязно-серый) и красим ими --accent/--accent-2. Палитра сайта следует за фото.
   const img = document.getElementById('hero-photo-img') as HTMLImageElement | null;
+
+  function rgbToHsl(r: number, g: number, b: number) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    const l = (max + min) / 2;
+    if (max === min) return { h: 0, s: 0, l };
+    const d = max - min;
+    const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    let h = 0;
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) * 60;
+    else if (max === g) h = ((b - r) / d + 2) * 60;
+    else h = ((r - g) / d + 4) * 60;
+    return { h, s, l };
+  }
+
+  function hslToCss(h: number, s: number, l: number) {
+    return `hsl(${Math.round(h)}deg ${Math.round(s * 100)}% ${Math.round(l * 100)}%)`;
+  }
 
   function extractPalette(image: HTMLImageElement) {
     try {
-      const size = 24;
+      const size = 32;
       const canvas = document.createElement('canvas');
       canvas.width = size;
       canvas.height = size;
@@ -140,25 +159,46 @@ import T from './T.astro';
       ctx.drawImage(image, 0, 0, size, size);
       const { data } = ctx.getImageData(0, 0, size, size);
 
-      let r1 = 0, g1 = 0, b1 = 0, n1 = 0; // светлые/тёплые пиксели
-      let r2 = 0, g2 = 0, b2 = 0, n2 = 0; // тёмные/холодные пиксели
+      const buckets = 24; // шаг 15°
+      const weight = new Array(buckets).fill(0);
+      const sumH: number[] = new Array(buckets).fill(0);
+      const sumS: number[] = new Array(buckets).fill(0);
+      const sumL: number[] = new Array(buckets).fill(0);
+      const count: number[] = new Array(buckets).fill(0);
 
       for (let i = 0; i < data.length; i += 4) {
         const r = data[i], g = data[i + 1], b = data[i + 2], a = data[i + 3];
         if (a < 128) continue;
-        const brightness = (r + g + b) / 3;
-        if (brightness >= 96) {
-          r1 += r; g1 += g; b1 += b; n1++;
-        } else {
-          r2 += r; g2 += g; b2 += b; n2++;
-        }
+        const { h, s, l } = rgbToHsl(r, g, b);
+        // Отбрасываем почти-серые/почти-чёрные/почти-белые пиксели — фон/тени не должны рулить палитрой.
+        if (s < 0.35 || l < 0.12 || l > 0.9) continue;
+        const bucket = Math.floor(h / (360 / buckets)) % buckets;
+        const w = s; // насыщенность как вес — доминируют яркие цвета, а не просто частые
+        weight[bucket] += w;
+        sumH[bucket] += h * w;
+        sumS[bucket] += s * w;
+        sumL[bucket] += l * w;
+        count[bucket]++;
       }
 
-      const mix = (r: number, g: number, b: number, n: number, fallback: string) =>
-        n > 0 ? `rgb(${Math.round(r / n)}, ${Math.round(g / n)}, ${Math.round(b / n)})` : fallback;
+      const order = weight
+        .map((w, i) => ({ w, i }))
+        .filter((b) => b.w > 0)
+        .sort((a, b) => b.w - a.w);
 
-      const accent = mix(r1, g1, b1, n1, '#5b8cff');
-      const accent2 = mix(r2, g2, b2, n2, '#ff5b9e');
+      if (order.length === 0) return; // недостаточно цвета (например, ч/б плейсхолдер) — оставляем дефолт
+
+      const toColor = (i: number) => hslToCss(sumH[i] / weight[i], sumS[i] / weight[i], Math.max(sumL[i] / weight[i], 0.42));
+
+      const accent = toColor(order[0].i);
+      // Второй акцент — следующий по весу бакет, достаточно отличающийся по оттенку (>35°), иначе сдвигаем hue вручную.
+      const second = order.find((b) => {
+        const dh = Math.abs(b.i - order[0].i) * (360 / buckets);
+        return b.i !== order[0].i && Math.min(dh, 360 - dh) > 35;
+      });
+      const accent2 = second
+        ? toColor(second.i)
+        : hslToCss((sumH[order[0].i] / weight[order[0].i] + 40) % 360, sumS[order[0].i] / weight[order[0].i], Math.max(sumL[order[0].i] / weight[order[0].i], 0.42));
 
       document.documentElement.style.setProperty('--accent', accent);
       document.documentElement.style.setProperty('--accent-2', accent2);

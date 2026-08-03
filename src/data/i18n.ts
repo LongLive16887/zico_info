@@ -3,9 +3,9 @@ export const langs: Lang[] = ['ru', 'uz', 'ky'];
 
 export const t = {
   tagline: {
-    ru: 'Стример и тренер eFootball Mobile',
-    uz: 'eFootball Mobile strimeri va murabbiyi',
-    ky: 'eFootball Mobile стримери жана тренери',
+    ru: 'Стример eFootball Mobile',
+    uz: 'eFootball Mobile strimeri',
+    ky: 'eFootball Mobile стримери',
   },
   statsLabel: {
     ru: 'учеников (Premium)',
