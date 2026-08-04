@@ -1,21 +1,14 @@
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-  src: local('Inter');
-}
-
 :root {
   color-scheme: dark;
-  --bg: #0a0a0f;
-  --bg-elevated: #13131c;
-  --border: #23232f;
-  --text: #f4f4f7;
-  --muted: #9494a8;
+  --bg: #07070b;
+  --ink: #ffffff;
+  --muted: #8f8fa6;
+  --stroke: rgba(255, 255, 255, 0.1);
+  --glass: rgba(255, 255, 255, 0.035);
   --accent: #ff8a1e;
-  --accent-2: #ff3b3b;
-  --radius: 18px;
+  --accent-2: #ffd166;
+  --radius: 16px;
+  --edge: clamp(0.9rem, 3.5vw, 2.6rem);
 }
 
 * {
@@ -29,28 +22,16 @@ html {
 body {
   margin: 0;
   background: var(--bg);
-  color: var(--text);
+  color: var(--ink);
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  overflow: hidden;
   position: relative;
 }
-
-/* Фоновые слои живут в src/components/Background.astro (scoped-стили). */
 
 img {
   max-width: 100%;
   display: block;
-}
-
-/* Весь контент — в один экран, без скролла, на любом размере. */
-.fit-screen {
-  min-height: 100svh;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow-y: auto;
 }
 
 a {
@@ -58,16 +39,70 @@ a {
   text-decoration: none;
 }
 
+:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 3px;
+}
+
+/* Каркас: бегущие строки сверху/снизу, контент растягивается между ними. */
+.stage {
+  height: 100svh;
+  height: 100dvh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+/* Бегущая строка и переключатель языка делят одну полосу — отдельная строка съедала высоту. */
+.topbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.6rem;
+  padding-right: var(--edge);
+  border-bottom: 1px solid var(--stroke);
+}
+
+.stage-body {
+  min-height: 0;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: clamp(0.7rem, 2.4vh, 1.8rem);
+  padding: clamp(0.6rem, 2vh, 1.6rem) var(--edge);
+  grid-template-areas:
+    'photo'
+    'identity'
+    'socials';
+}
+
+@media (min-width: 800px) {
+  .stage-body {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'photo identity'
+      'socials socials';
+    column-gap: clamp(1.4rem, 3.5vw, 3rem);
+    justify-items: stretch;
+    align-content: center;
+    max-width: 1120px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
 /* Анимируем только transform/opacity — они композитятся на GPU и не вызывают layout/paint. */
 @media (prefers-reduced-motion: no-preference) {
   .reveal {
     opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(14px);
+    animation: reveal-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: var(--d, 0s);
     will-change: transform, opacity;
   }
+}
 
-  .reveal.is-visible {
+@keyframes reveal-in {
+  to {
     opacity: 1;
     transform: translateY(0);
   }

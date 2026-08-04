@@ -1,0 +1,78 @@
+---
+interface Props {
+  items: string[];
+  reverse?: boolean;
+}
+const { items, reverse } = Astro.props as Props;
+// Дублируем ленту дважды: вторая копия занимает место первой к концу цикла — шов не виден.
+const track = [...items, ...items];
+---
+
+<div class={`marquee${reverse ? ' is-reverse' : ''}`} aria-hidden="true">
+  <div class="track">
+    {
+      track.map((item) => (
+        <span class="item">
+          {item}
+          <i class="dot" />
+        </span>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .marquee {
+    overflow: hidden;
+    padding-block: clamp(0.28rem, 0.9vh, 0.5rem);
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  }
+
+  .track {
+    display: flex;
+    width: max-content;
+    animation: slide 38s linear infinite;
+    will-change: transform;
+  }
+
+  .is-reverse {
+    border-top: 1px solid var(--stroke);
+  }
+
+  .is-reverse .track {
+    animation-direction: reverse;
+  }
+
+  @keyframes slide {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .item {
+    display: inline-flex;
+    align-items: center;
+    gap: clamp(0.7rem, 2vw, 1.4rem);
+    padding-inline: clamp(0.35rem, 1vw, 0.7rem);
+    font-size: clamp(0.55rem, 1.3vh, 0.72rem);
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .track {
+      animation: none;
+    }
+  }
+</style>

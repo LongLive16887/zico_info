@@ -1,20 +1,35 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Hero from '../components/Hero.astro';
-import Bio from '../components/Bio.astro';
-import Stats from '../components/Stats.astro';
+import Marquee from '../components/Marquee.astro';
+import PhotoCard from '../components/PhotoCard.astro';
+import Identity from '../components/Identity.astro';
 import Socials from '../components/Socials.astro';
 import LangSwitch from '../components/LangSwitch.astro';
 import { profile } from '../data/profile';
 import { t, defaultLang } from '../data/i18n';
+
+const ticker = [
+  'ZICO EFOOTBALL',
+  'EFOOTBALL MOBILE',
+  `${profile.statValue}${profile.statSuffix} PREMIUM`,
+  'COINS DONATE',
+  'ACCOUNT SHOP',
+];
 ---
 
 <Layout title={`${profile.name} — eFootball Mobile`} description={t.tagline[defaultLang]}>
-  <LangSwitch />
-  <main class="fit-screen">
-    <Hero />
-    <Bio />
-    <Stats />
-    <Socials />
-  </main>
+  <div class="stage">
+    <div class="topbar">
+      <Marquee items={ticker} />
+      <LangSwitch />
+    </div>
+
+    <div class="stage-body">
+      <PhotoCard />
+      <Identity />
+      <Socials />
+    </div>
+
+    <Marquee items={ticker} reverse />
+  </div>
 </Layout>

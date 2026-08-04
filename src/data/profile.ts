@@ -1,8 +1,11 @@
 // Единственное место для правки контента визитки (кроме переводов — они в i18n.ts).
 export const profile = {
   name: 'ZICO EFOOTBALL',
+  nameLines: ['ZICO', 'EFOOTBALL'], // заголовок набирается в две строки
+  handle: '@zico_efootball',
   photo: '/photo.jpg',
-  statValue: '900+',
+  statValue: 900,
+  statSuffix: '+',
 };
 
 export type SocialLink = {

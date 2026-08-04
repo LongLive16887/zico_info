@@ -1,0 +1,62 @@
+---
+// Пятно света, следующее за курсором. Двигаем через transform фиксированного слоя,
+// а не через background-position — иначе на каждый кадр была бы перерисовка градиента.
+---
+
+<div class="spotlight" id="spotlight" aria-hidden="true"></div>
+
+<style>
+  .spotlight {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 46vmax;
+    height: 46vmax;
+    margin: -23vmax 0 0 -23vmax;
+    border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 26%, transparent), transparent 62%);
+    filter: blur(46px);
+    opacity: 0;
+    z-index: -1;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+    will-change: transform;
+  }
+
+  @media (pointer: coarse), (prefers-reduced-motion: reduce) {
+    .spotlight {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const el = document.getElementById('spotlight');
+
+  if (el && matchMedia('(pointer: fine) and (prefers-reduced-motion: no-preference)').matches) {
+    let raf = 0;
+    let tx = 0;
+    let ty = 0;
+    let x = 0;
+    let y = 0;
+
+    const loop = () => {
+      // Догоняем курсор с задержкой — движение получается плавным, а не дёрганым.
+      x += (tx - x) * 0.09;
+      y += (ty - y) * 0.09;
+      el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      raf = Math.abs(tx - x) > 0.5 || Math.abs(ty - y) > 0.5 ? requestAnimationFrame(loop) : 0;
+    };
+
+    window.addEventListener('pointermove', (e) => {
+      tx = e.clientX;
+      ty = e.clientY;
+      el.style.opacity = '1';
+      if (!raf) raf = requestAnimationFrame(loop);
+    });
+
+    document.addEventListener('pointerleave', () => {
+      el.style.opacity = '0';
+    });
+  }
+</script>

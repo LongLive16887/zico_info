@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import Background from '../components/Background.astro';
+import Spotlight from '../components/Spotlight.astro';
 import { defaultLang } from '../data/i18n';
 
 interface Props {
@@ -31,23 +32,7 @@ const { title, description } = Astro.props as Props;
   </head>
   <body>
     <Background />
+    <Spotlight />
     <slot />
-
-    <script>
-      // Лёгкий scroll-reveal без библиотек: один IntersectionObserver на всю страницу.
-      const revealEls = document.querySelectorAll<HTMLElement>('.reveal');
-      const io = new IntersectionObserver(
-        (entries) => {
-          for (const entry of entries) {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('is-visible');
-              io.unobserve(entry.target);
-            }
-          }
-        },
-        { threshold: 0.15 }
-      );
-      revealEls.forEach((el) => io.observe(el));
-    </script>
   </body>
 </html>

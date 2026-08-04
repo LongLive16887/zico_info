@@ -1,0 +1,273 @@
+---
+import { profile } from '../data/profile';
+---
+
+<div class="card-wrap reveal" style="--d: 0.05s">
+  <div class="halo"></div>
+  <figure class="card" id="photo-card">
+    <img
+      id="hero-photo-img"
+      src={profile.photo}
+      alt={profile.name}
+      width="640"
+      height="640"
+      fetchpriority="high"
+      decoding="async"
+      crossorigin="anonymous"
+    />
+    <span class="sheen"></span>
+    <span class="corner tl"></span>
+    <span class="corner br"></span>
+  </figure>
+</div>
+
+<style>
+  .card-wrap {
+    grid-area: photo;
+    position: relative;
+    justify-self: center;
+    display: grid;
+    place-items: center;
+    perspective: 800px;
+  }
+
+  .halo {
+    position: absolute;
+    inset: -18%;
+    background: radial-gradient(circle at 50% 45%, var(--accent) 0%, var(--accent-2) 35%, transparent 70%);
+    filter: blur(38px);
+    opacity: 0.5;
+    animation: halo-pulse 6s ease-in-out infinite alternate;
+    will-change: transform, opacity;
+    pointer-events: none;
+  }
+
+  @keyframes halo-pulse {
+    from {
+      transform: scale(0.92);
+      opacity: 0.36;
+    }
+    to {
+      transform: scale(1.08);
+      opacity: 0.6;
+    }
+  }
+
+  .card {
+    position: relative;
+    margin: 0;
+    height: clamp(112px, 26vh, 300px);
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 20px;
+    /* Срезанный угол — карточка читается как игровой HUD, а не как обычное фото. */
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 26px), calc(100% - 26px) 100%, 0 100%);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    transform-style: preserve-3d;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Кадрируем крупно по лицу: фирменная надпись внизу арта иначе дублирует заголовок.
+     Проценты считаются от карточки, а её пропорции фиксированы — кроп держится на любом экране. */
+  .card img {
+    position: absolute;
+    width: 230%;
+    max-width: none; /* перебиваем глобальное img { max-width: 100% } — иначе зум не сработает */
+    height: auto;
+    left: -72%;
+    top: -2%;
+  }
+
+  /* Блик, ползущий по карточке. */
+  .sheen {
+    position: absolute;
+    inset: -50%;
+    background: linear-gradient(115deg, transparent 42%, rgba(255, 255, 255, 0.22) 50%, transparent 58%);
+    transform: translateX(-70%);
+    animation: sheen-sweep 6.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes sheen-sweep {
+    0%,
+    62% {
+      transform: translateX(-70%);
+    }
+    100% {
+      transform: translateX(70%);
+    }
+  }
+
+  .corner {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    pointer-events: none;
+  }
+
+  .tl {
+    top: 10px;
+    left: 10px;
+    border-top: 2px solid var(--accent-2);
+    border-left: 2px solid var(--accent-2);
+  }
+
+  .br {
+    right: 12px;
+    bottom: 30px;
+    border-bottom: 2px solid var(--accent-2);
+    border-right: 2px solid var(--accent-2);
+  }
+
+  /* На широких экранах композиция крупнее — иначе карточка теряется в пустом поле. */
+  @media (min-width: 800px) {
+    .card {
+      height: clamp(170px, 42vh, 440px);
+      border-radius: 26px;
+      clip-path: polygon(0 0, 100% 0, 100% calc(100% - 34px), calc(100% - 34px) 100%, 0 100%);
+    }
+
+    .corner {
+      width: 32px;
+      height: 32px;
+    }
+
+    .br {
+      bottom: 38px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .halo,
+    .sheen {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  // Наклон карточки за курсором — только transform, значения копятся и пишутся раз в кадр.
+  const card = document.getElementById('photo-card');
+  if (card && matchMedia('(pointer: fine)').matches) {
+    let raf = 0;
+    let rx = 0;
+    let ry = 0;
+
+    const write = () => {
+      card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateZ(0)`;
+      raf = 0;
+    };
+
+    const wrap = card.parentElement!;
+    wrap.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect();
+      ry = ((e.clientX - r.left) / r.width - 0.5) * 16;
+      rx = -((e.clientY - r.top) / r.height - 0.5) * 16;
+      if (!raf) raf = requestAnimationFrame(write);
+    });
+
+    wrap.addEventListener('pointerleave', () => {
+      rx = 0;
+      ry = 0;
+      if (!raf) raf = requestAnimationFrame(write);
+    });
+  }
+
+  // Палитра сайта следует за фото: берём доминирующие НАСЫЩЕННЫЕ оттенки,
+  // иначе среднее по картинке всегда уходит в грязно-серый.
+  const img = document.getElementById('hero-photo-img') as HTMLImageElement | null;
+
+  function rgbToHsl(r: number, g: number, b: number) {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const l = (max + min) / 2;
+    if (max === min) return { h: 0, s: 0, l };
+    const d = max - min;
+    const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    let h = 0;
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) * 60;
+    else if (max === g) h = ((b - r) / d + 2) * 60;
+    else h = ((r - g) / d + 4) * 60;
+    return { h, s, l };
+  }
+
+  const hslToCss = (h: number, s: number, l: number) =>
+    `hsl(${Math.round(h)}deg ${Math.round(s * 100)}% ${Math.round(l * 100)}%)`;
+
+  function extractPalette(image: HTMLImageElement) {
+    try {
+      const size = 32;
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.drawImage(image, 0, 0, size, size);
+      const { data } = ctx.getImageData(0, 0, size, size);
+
+      const buckets = 24; // шаг 15°
+      const weight = new Array(buckets).fill(0);
+      const sumH = new Array(buckets).fill(0);
+      const sumS = new Array(buckets).fill(0);
+      const sumL = new Array(buckets).fill(0);
+
+      for (let i = 0; i < data.length; i += 4) {
+        const [r, g, b, a] = [data[i], data[i + 1], data[i + 2], data[i + 3]];
+        if (a < 128) continue;
+        const { h, s, l } = rgbToHsl(r, g, b);
+        // Почти-серые/чёрные/белые пиксели — это фон и тени, палитру они определять не должны.
+        if (s < 0.35 || l < 0.12 || l > 0.9) continue;
+        const bucket = Math.floor(h / (360 / buckets)) % buckets;
+        const w = s; // вес по насыщенности: доминируют яркие цвета, а не просто частые
+        weight[bucket] += w;
+        sumH[bucket] += h * w;
+        sumS[bucket] += s * w;
+        sumL[bucket] += l * w;
+      }
+
+      const order = weight
+        .map((w, i) => ({ w, i }))
+        .filter((b) => b.w > 0)
+        .sort((a, b) => b.w - a.w);
+
+      if (order.length === 0) return; // цвета не набралось — оставляем дефолт
+
+      const hueOf = (i: number) => sumH[i] / weight[i];
+      const satOf = (i: number) => sumS[i] / weight[i];
+      const toColor = (i: number) =>
+        hslToCss(hueOf(i), satOf(i), Math.min(Math.max(sumL[i] / weight[i], 0.5), 0.62));
+
+      const top = order[0].i;
+      const accent = toColor(top);
+
+      // Оттенки 55–160° (лайм/зелень) рядом с тёплым основным читаются грязно, поэтому
+      // для второго акцента берём только гармоничного соседа (25–75° по кругу) вне этой зоны.
+      const warm = hueOf(top) < 55 || hueOf(top) > 330;
+      const second = order.find((b) => {
+        if (b.i === top) return false;
+        const raw = Math.abs(hueOf(b.i) - hueOf(top));
+        const dh = Math.min(raw, 360 - raw);
+        if (dh < 25 || dh > 75) return false;
+        const h = hueOf(b.i);
+        return !(warm && h > 55 && h < 160);
+      });
+
+      // Фолбэк — аналоговый сдвиг в сторону красного: для огненных фото даёт живой оранж→золото.
+      const accent2 = second ? toColor(second.i) : hslToCss((hueOf(top) - 22 + 360) % 360, satOf(top), 0.55);
+
+      document.documentElement.style.setProperty('--accent', accent);
+      document.documentElement.style.setProperty('--accent-2', accent2);
+    } catch {
+      // CORS/decode ошибки — просто оставляем статичную палитру по умолчанию.
+    }
+  }
+
+  if (img) {
+    if (img.complete) extractPalette(img);
+    else img.addEventListener('load', () => extractPalette(img));
+  }
+</script>

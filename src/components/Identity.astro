@@ -1,0 +1,202 @@
+---
+import { profile } from '../data/profile';
+import { t } from '../data/i18n';
+import T from './T.astro';
+---
+
+<div class="identity">
+  <span class="handle reveal" style="--d: 0.1s">
+    <i class="live"></i>
+    {profile.handle}
+  </span>
+
+  <h1 class="name reveal" style="--d: 0.16s">
+    {profile.nameLines.map((line, i) => <span class={i === 0 ? 'line' : 'line accent'}>{line}</span>)}
+  </h1>
+
+  <p class="tagline reveal" style="--d: 0.22s"><T text={t.tagline} /></p>
+
+  <p class="bio reveal" style="--d: 0.28s"><T text={t.bio} block /></p>
+
+  <div class="stat reveal" style="--d: 0.34s">
+    <span class="value" id="stat-value" data-target={profile.statValue} data-suffix={profile.statSuffix}>
+      {profile.statValue}{profile.statSuffix}
+    </span>
+    <span class="label"><T text={t.statsLabel} /></span>
+  </div>
+</div>
+
+<style>
+  .identity {
+    grid-area: identity;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: clamp(0.3rem, 1vh, 0.6rem);
+    min-width: 0;
+  }
+
+  @media (min-width: 800px) {
+    .identity {
+      align-items: flex-start;
+      text-align: left;
+      gap: clamp(0.4rem, 1.4vh, 0.9rem);
+    }
+
+    .name {
+      font-size: clamp(2.5rem, 10vh, 6.6rem);
+    }
+
+    .tagline {
+      font-size: clamp(0.9rem, 2.3vh, 1.25rem);
+    }
+
+    .bio {
+      font-size: clamp(0.8rem, 1.9vh, 1.02rem);
+    }
+
+    .value {
+      font-size: clamp(1.6rem, 4.4vh, 2.8rem);
+    }
+
+    .label {
+      font-size: clamp(0.72rem, 1.7vh, 0.92rem);
+    }
+  }
+
+  .handle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.28rem 0.7rem;
+    border: 1px solid var(--stroke);
+    border-radius: 999px;
+    background: var(--glass);
+    font-size: clamp(0.62rem, 1.4vh, 0.75rem);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .live {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 var(--accent);
+    animation: ping 2s ease-out infinite;
+  }
+
+  @keyframes ping {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 70%, transparent);
+    }
+    70%,
+    100% {
+      box-shadow: 0 0 0 7px transparent;
+    }
+  }
+
+  .name {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    line-height: 0.86;
+    font-size: clamp(1.75rem, 7.4vh, 5rem);
+    font-weight: 900;
+    letter-spacing: -0.045em;
+    text-transform: uppercase;
+  }
+
+  .line {
+    display: block;
+  }
+
+  /* Вторая строка — заливка градиентом из палитры фото. */
+  .accent {
+    background: linear-gradient(96deg, var(--accent), var(--accent-2) 70%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .tagline {
+    margin: 0.15rem 0 0;
+    font-size: clamp(0.78rem, 1.9vh, 1rem);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+  }
+
+  .bio {
+    margin: 0;
+    max-width: 46ch;
+    font-size: clamp(0.72rem, 1.65vh, 0.9rem);
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .stat {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-top: clamp(0.15rem, 0.8vh, 0.5rem);
+    padding-top: clamp(0.35rem, 1.2vh, 0.7rem);
+    border-top: 1px solid var(--stroke);
+    width: 100%;
+    justify-content: center;
+  }
+
+  @media (min-width: 800px) {
+    .stat {
+      justify-content: flex-start;
+    }
+  }
+
+  .value {
+    font-size: clamp(1.35rem, 3.6vh, 2.2rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(120deg, var(--accent-2), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .label {
+    font-size: clamp(0.66rem, 1.5vh, 0.8rem);
+    color: var(--muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .live {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  // Счётчик добегает до значения один раз при загрузке.
+  const el = document.getElementById('stat-value');
+  const target = Number(el?.dataset.target ?? 0);
+
+  if (el && target > 0 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const suffix = el.dataset.suffix ?? '';
+    const duration = 1100;
+    let start = 0;
+
+    const step = (now: number) => {
+      if (!start) start = now;
+      const p = Math.min((now - start) / duration, 1);
+      // easeOutExpo — быстрый разгон и мягкая остановка на финальном числе
+      const eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+      el.textContent = Math.round(target * eased) + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    };
+
+    el.textContent = '0' + suffix;
+    requestAnimationFrame(step);
+  }
+</script>
