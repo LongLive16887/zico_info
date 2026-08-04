@@ -5,20 +5,18 @@ import T from './T.astro';
 ---
 
 <div class="identity">
-  <h1 class="name reveal" style="--d: 0.16s">
-    {profile.nameLines.map((line, i) => <span class={i === 0 ? 'line' : 'line accent'}>{line}</span>)}
-  </h1>
+  <h1 class="name reveal" style="--d: 0.16s">{profile.name}</h1>
 
-  <p class="tagline reveal" style="--d: 0.22s"><T text={t.tagline} /></p>
+  <p class="tagline reveal" style="--d: 0.2s"><T text={t.tagline} /></p>
 
-  <p class="bio reveal" style="--d: 0.28s"><T text={t.bio} block /></p>
-
-  <div class="stat reveal" style="--d: 0.34s">
+  <div class="stat reveal" style="--d: 0.26s">
     <span class="value" id="stat-value" data-target={profile.statValue} data-suffix={profile.statSuffix}>
       {profile.statValue}{profile.statSuffix}
     </span>
     <span class="label"><T text={t.statsLabel} /></span>
   </div>
+
+  <p class="bio reveal" style="--d: 0.32s"><T text={t.bio} block /></p>
 </div>
 
 <style>
@@ -36,15 +34,17 @@ import T from './T.astro';
     .identity {
       align-items: flex-start;
       text-align: left;
+      /* Колонка тянется по высоте арта — центрируем содержимое, иначе оно липнет к верху. */
+      justify-content: center;
       gap: clamp(0.4rem, 1.4vh, 0.9rem);
     }
 
     .name {
-      font-size: clamp(2.5rem, 10vh, 6.6rem);
+      font-size: clamp(1.15rem, 2.9vh, 1.8rem);
     }
 
     .tagline {
-      font-size: clamp(0.9rem, 2.3vh, 1.25rem);
+      font-size: clamp(0.82rem, 2vh, 1.05rem);
     }
 
     .bio {
@@ -52,43 +52,32 @@ import T from './T.astro';
     }
 
     .value {
-      font-size: clamp(1.6rem, 4.4vh, 2.8rem);
+      font-size: clamp(3rem, 10vh, 6.5rem);
     }
 
     .label {
-      font-size: clamp(0.72rem, 1.7vh, 0.92rem);
+      font-size: clamp(0.72rem, 1.75vh, 0.95rem);
     }
   }
 
+  /* Имя набрано сдержанно: оно уже крупно написано на самом арте,
+     второй огромный дубль спорил бы с картинкой. */
   .name {
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    line-height: 0.86;
-    font-size: clamp(1.75rem, 7.4vh, 5rem);
-    font-weight: 900;
-    letter-spacing: -0.045em;
+    line-height: 1;
+    font-size: clamp(0.95rem, 2.5vh, 1.5rem);
+    font-weight: 800;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-  }
-
-  .line {
-    display: block;
-  }
-
-  /* Вторая строка — заливка градиентом из палитры фото. */
-  .accent {
-    background: linear-gradient(96deg, var(--accent), var(--accent-2) 70%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: var(--ink);
   }
 
   .tagline {
-    margin: 0.15rem 0 0;
-    font-size: clamp(0.78rem, 1.9vh, 1rem);
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    color: var(--ink);
+    margin: 0;
+    font-size: clamp(0.72rem, 1.7vh, 0.92rem);
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    color: var(--muted);
   }
 
   .bio {
@@ -99,27 +88,26 @@ import T from './T.astro';
     color: var(--muted);
   }
 
+  /* Цифра — смысловой акцент блока: это то, чего нет на арте. */
   .stat {
     display: flex;
-    align-items: baseline;
-    gap: 0.5rem;
-    margin-top: clamp(0.15rem, 0.8vh, 0.5rem);
-    padding-top: clamp(0.35rem, 1.2vh, 0.7rem);
-    border-top: 1px solid var(--stroke);
-    width: 100%;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    margin-top: clamp(0.1rem, 0.7vh, 0.4rem);
   }
 
   @media (min-width: 800px) {
     .stat {
-      justify-content: flex-start;
+      align-items: flex-start;
     }
   }
 
   .value {
-    font-size: clamp(1.35rem, 3.6vh, 2.2rem);
+    font-size: clamp(2.4rem, 8vh, 5.2rem);
     font-weight: 900;
-    letter-spacing: -0.02em;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
     font-variant-numeric: tabular-nums;
     background: linear-gradient(120deg, var(--accent-2), var(--accent));
     -webkit-background-clip: text;
@@ -128,7 +116,10 @@ import T from './T.astro';
   }
 
   .label {
-    font-size: clamp(0.66rem, 1.5vh, 0.8rem);
+    font-size: clamp(0.66rem, 1.55vh, 0.85rem);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     color: var(--muted);
   }
 
