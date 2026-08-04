@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import Embers from '../components/Embers.astro';
+import Background from '../components/Background.astro';
 
 interface Props {
   title: string;
@@ -26,8 +26,7 @@ const { title, description } = Astro.props as Props;
     </script>
   </head>
   <body>
-    <div class="aurora" aria-hidden="true"><span></span><span></span><span></span></div>
-    <Embers />
+    <Background />
     <slot />
 
     <script>

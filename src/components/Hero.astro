@@ -6,6 +6,9 @@ import T from './T.astro';
 
 <section class="hero">
   <div class="photo-wrap reveal delay-0">
+    <div class="pulse"></div>
+    <div class="pulse pulse-2"></div>
+    <div class="pulse pulse-3"></div>
     <div class="ring"></div>
     <div class="hero-photo" id="hero-photo-tilt">
       <img id="hero-photo-img" src={profile.photo} alt={profile.name} width="120" height="120" crossorigin="anonymous" />
@@ -32,6 +35,37 @@ import T from './T.astro';
     display: grid;
     place-items: center;
     margin-bottom: 0.3rem;
+  }
+
+  /* Кольца, расходящиеся от аватара — только transform/opacity. */
+  .pulse {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-2);
+    opacity: 0;
+    animation: pulse-out 3.6s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+    will-change: transform, opacity;
+    pointer-events: none;
+  }
+
+  .pulse-2 {
+    animation-delay: 1.2s;
+  }
+
+  .pulse-3 {
+    animation-delay: 2.4s;
+  }
+
+  @keyframes pulse-out {
+    0% {
+      transform: scale(1);
+      opacity: 0.55;
+    }
+    100% {
+      transform: scale(2.1);
+      opacity: 0;
+    }
   }
 
   /* Вращающееся кольцо со свечением вокруг фото — только transform, дёшево для GPU. */
@@ -94,8 +128,13 @@ import T from './T.astro';
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .ring {
+    .ring,
+    .pulse {
       animation: none;
+    }
+
+    .pulse {
+      display: none;
     }
   }
 </style>
@@ -189,17 +228,29 @@ import T from './T.astro';
 
       if (order.length === 0) return; // недостаточно цвета (например, ч/б плейсхолдер) — оставляем дефолт
 
-      const toColor = (i: number) => hslToCss(sumH[i] / weight[i], sumS[i] / weight[i], Math.max(sumL[i] / weight[i], 0.42));
+      const hueOf = (i: number) => sumH[i] / weight[i];
+      const satOf = (i: number) => sumS[i] / weight[i];
+      const toColor = (i: number) => hslToCss(hueOf(i), satOf(i), Math.min(Math.max(sumL[i] / weight[i], 0.5), 0.62));
 
-      const accent = toColor(order[0].i);
-      // Второй акцент — следующий по весу бакет, достаточно отличающийся по оттенку (>35°), иначе сдвигаем hue вручную.
+      const top = order[0].i;
+      const accent = toColor(top);
+
+      // Оттенки 55–160° (лайм/зелень) рядом с тёплым основным читаются грязно, поэтому
+      // для второго акцента берём только гармоничного соседа (25–75° по кругу) вне этой зоны.
+      const warm = hueOf(top) < 55 || hueOf(top) > 330;
       const second = order.find((b) => {
-        const dh = Math.abs(b.i - order[0].i) * (360 / buckets);
-        return b.i !== order[0].i && Math.min(dh, 360 - dh) > 35;
+        if (b.i === top) return false;
+        const raw = Math.abs(hueOf(b.i) - hueOf(top));
+        const dh = Math.min(raw, 360 - raw);
+        if (dh < 25 || dh > 75) return false;
+        const h = hueOf(b.i);
+        return !(warm && h > 55 && h < 160);
       });
+
+      // Фолбэк — аналоговый сдвиг в сторону красного: для огненных фото даёт живой оранж→красный дуотон.
       const accent2 = second
         ? toColor(second.i)
-        : hslToCss((sumH[order[0].i] / weight[order[0].i] + 40) % 360, sumS[order[0].i] / weight[order[0].i], Math.max(sumL[order[0].i] / weight[order[0].i], 0.42));
+        : hslToCss((hueOf(top) - 22 + 360) % 360, satOf(top), 0.55);
 
       document.documentElement.style.setProperty('--accent', accent);
       document.documentElement.style.setProperty('--accent-2', accent2);

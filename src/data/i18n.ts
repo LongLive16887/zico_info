@@ -12,11 +12,6 @@ export const t = {
     uz: 'shogird (Premium)',
     ky: 'окуучу (Premium)',
   },
-  bioTitle: {
-    ru: 'Обо мне',
-    uz: 'Men haqimda',
-    ky: 'Мен жөнүндө',
-  },
   bio: {
     ru: 'Меня зовут Мухаммадазиз, я стример по eFootball Mobile из Кыргызстана. Мне 19 лет. Здесь собраны мои официальные страницы.',
     uz: "Mening ismim Muhammadaziz, men Qirg'izistondan eFootball Mobile bo'yicha strimerman. Yoshim 19 da. Bu yerda mening rasmiy sahifalarim jamlangan.",

@@ -4,7 +4,6 @@ import T from './T.astro';
 ---
 
 <section class="bio reveal">
-  <h2><T text={t.bioTitle} /></h2>
   <p><T text={t.bio} block /></p>
 </section>
 
@@ -14,14 +13,6 @@ import T from './T.astro';
     margin: 0 auto;
     padding: 0 1.2rem clamp(0.6rem, 2vh, 1.1rem);
     text-align: center;
-  }
-
-  h2 {
-    font-size: clamp(0.7rem, 1.4vh, 0.8rem);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    margin: 0 0 0.3rem;
   }
 
   p {

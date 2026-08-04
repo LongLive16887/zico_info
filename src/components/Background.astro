@@ -1,0 +1,194 @@
+---
+import Embers from './Embers.astro';
+---
+
+<div class="bg" aria-hidden="true">
+  <!-- Медленно плывущие цветные пятна -->
+  <div class="aurora"><span></span><span></span><span></span></div>
+
+  <!-- Вращающиеся лучи света сверху -->
+  <div class="rays"></div>
+
+  <!-- Уходящая в перспективу сетка (внутренний слой едет вверх на transform) -->
+  <div class="grid-floor"><div class="grid-inner"></div></div>
+
+  <!-- Дышащее зарево у нижней кромки -->
+  <div class="glow"></div>
+
+  <!-- Летящие вверх искры -->
+  <Embers />
+
+  <!-- Плавающая зернистость поверх всего -->
+  <div class="grain"></div>
+</div>
+
+<style>
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* --- Пятна --- */
+  .aurora span {
+    position: absolute;
+    width: 46vmax;
+    height: 46vmax;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.32;
+    will-change: transform;
+    background: radial-gradient(circle at 30% 30%, var(--accent), transparent 70%);
+  }
+
+  .aurora span:nth-child(1) {
+    top: -18vmax;
+    left: -14vmax;
+    animation: drift-a 22s ease-in-out infinite alternate;
+  }
+
+  .aurora span:nth-child(2) {
+    bottom: -20vmax;
+    right: -16vmax;
+    background: radial-gradient(circle at 60% 40%, var(--accent-2), transparent 70%);
+    animation: drift-b 26s ease-in-out infinite alternate;
+  }
+
+  .aurora span:nth-child(3) {
+    top: 30%;
+    left: 50%;
+    width: 30vmax;
+    height: 30vmax;
+    opacity: 0.2;
+    animation: drift-c 30s ease-in-out infinite alternate;
+  }
+
+  @keyframes drift-a {
+    from { transform: translate(0, 0) scale(1); }
+    to { transform: translate(8vmax, 6vmax) scale(1.15); }
+  }
+
+  @keyframes drift-b {
+    from { transform: translate(0, 0) scale(1); }
+    to { transform: translate(-6vmax, -8vmax) scale(1.1); }
+  }
+
+  @keyframes drift-c {
+    from { transform: translate(-50%, 0) rotate(0deg); }
+    to { transform: translate(-50%, -4vmax) rotate(25deg); }
+  }
+
+  /* --- Лучи --- */
+  .rays {
+    position: absolute;
+    top: -60vmax;
+    left: 50%;
+    width: 120vmax;
+    height: 120vmax;
+    margin-left: -60vmax;
+    background: conic-gradient(
+      from 0deg,
+      transparent 0deg 12deg,
+      color-mix(in srgb, var(--accent) 45%, transparent) 14deg 17deg,
+      transparent 19deg 44deg,
+      color-mix(in srgb, var(--accent-2) 35%, transparent) 46deg 48deg,
+      transparent 50deg 96deg,
+      color-mix(in srgb, var(--accent) 30%, transparent) 98deg 101deg,
+      transparent 103deg 168deg,
+      color-mix(in srgb, var(--accent-2) 30%, transparent) 170deg 173deg,
+      transparent 175deg 360deg
+    );
+    filter: blur(22px);
+    opacity: 0.5;
+    animation: sweep 46s linear infinite;
+    will-change: transform;
+    mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 68%);
+    -webkit-mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 68%);
+  }
+
+  @keyframes sweep {
+    to { transform: rotate(360deg); }
+  }
+
+  /* --- Сетка --- */
+  .grid-floor {
+    position: absolute;
+    bottom: -2vh;
+    left: 50%;
+    width: 260vw;
+    height: 52vh;
+    margin-left: -130vw;
+    transform: perspective(340px) rotateX(74deg);
+    transform-origin: bottom center;
+    opacity: 0.38;
+    overflow: hidden;
+    mask-image: linear-gradient(to top, black 5%, transparent 85%);
+    -webkit-mask-image: linear-gradient(to top, black 5%, transparent 85%);
+  }
+
+  .grid-inner {
+    position: absolute;
+    inset: -100% 0 0 0;
+    height: 200%;
+    background-image:
+      repeating-linear-gradient(to right, color-mix(in srgb, var(--accent) 60%, transparent) 0 1px, transparent 1px 7vw),
+      repeating-linear-gradient(to bottom, color-mix(in srgb, var(--accent) 60%, transparent) 0 1px, transparent 1px 6vh);
+    animation: grid-scroll 5.5s linear infinite;
+    will-change: transform;
+  }
+
+  @keyframes grid-scroll {
+    from { transform: translateY(0); }
+    to { transform: translateY(6vh); }
+  }
+
+  /* --- Зарево --- */
+  .glow {
+    position: absolute;
+    bottom: -22vh;
+    left: 50%;
+    width: 130vw;
+    height: 46vh;
+    margin-left: -65vw;
+    background: radial-gradient(ellipse at 50% 100%, var(--accent) 0%, var(--accent-2) 28%, transparent 68%);
+    filter: blur(50px);
+    opacity: 0.28;
+    animation: breathe 7s ease-in-out infinite alternate;
+    will-change: transform, opacity;
+  }
+
+  @keyframes breathe {
+    from { transform: scaleY(0.85) scaleX(1); opacity: 0.3; }
+    to { transform: scaleY(1.12) scaleX(1.06); opacity: 0.5; }
+  }
+
+  /* --- Зерно --- */
+  .grain {
+    position: absolute;
+    inset: -120px;
+    opacity: 0.16;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+    animation: grain-shift 0.7s steps(4) infinite;
+    will-change: transform;
+  }
+
+  @keyframes grain-shift {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(-40px, 24px); }
+    50% { transform: translate(28px, -36px); }
+    75% { transform: translate(-24px, -20px); }
+    100% { transform: translate(36px, 30px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aurora span,
+    .rays,
+    .grid-inner,
+    .glow,
+    .grain {
+      animation: none;
+    }
+  }
+</style>
