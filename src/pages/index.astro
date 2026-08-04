@@ -6,10 +6,10 @@ import Stats from '../components/Stats.astro';
 import Socials from '../components/Socials.astro';
 import LangSwitch from '../components/LangSwitch.astro';
 import { profile } from '../data/profile';
-import { t } from '../data/i18n';
+import { t, defaultLang } from '../data/i18n';
 ---
 
-<Layout title={`${profile.name} — eFootball Mobile`} description={t.tagline.ru}>
+<Layout title={`${profile.name} — eFootball Mobile`} description={t.tagline[defaultLang]}>
   <LangSwitch />
   <main class="fit-screen">
     <Hero />

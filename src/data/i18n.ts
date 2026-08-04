@@ -1,5 +1,9 @@
 export type Lang = 'ru' | 'uz' | 'ky';
-export const langs: Lang[] = ['ru', 'uz', 'ky'];
+
+// Порядок кнопок в переключателе.
+export const langs: Lang[] = ['ky', 'uz', 'ru'];
+
+export const defaultLang: Lang = 'uz';
 
 export const t = {
   tagline: {

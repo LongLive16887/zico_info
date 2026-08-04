@@ -85,14 +85,15 @@ a {
   display: none;
 }
 
-html:not([data-lang]) .i18n[data-lang='ru'],
+/* Без data-lang (JS отключён) показываем узбекский — язык по умолчанию. */
+html:not([data-lang]) .i18n[data-lang='uz'],
 html[data-lang='ru'] .i18n[data-lang='ru'],
 html[data-lang='uz'] .i18n[data-lang='uz'],
 html[data-lang='ky'] .i18n[data-lang='ky'] {
   display: inline;
 }
 
-html:not([data-lang]) .i18n-block[data-lang='ru'],
+html:not([data-lang]) .i18n-block[data-lang='uz'],
 html[data-lang='ru'] .i18n-block[data-lang='ru'],
 html[data-lang='uz'] .i18n-block[data-lang='uz'],
 html[data-lang='ky'] .i18n-block[data-lang='ky'] {

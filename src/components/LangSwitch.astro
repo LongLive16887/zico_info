@@ -46,15 +46,17 @@ import { langs } from '../data/i18n';
 
   function apply(lang: string) {
     document.documentElement.setAttribute('data-lang', lang);
+    document.documentElement.setAttribute('lang', lang);
     buttons.forEach((b) => b.setAttribute('aria-current', String(b.dataset.setLang === lang)));
   }
 
-  apply(document.documentElement.getAttribute('data-lang') || 'ru');
+  // Язык уже проставлен блокирующим скриптом в <head> — здесь только подсвечиваем активную кнопку.
+  apply(document.documentElement.getAttribute('data-lang')!);
 
   buttons.forEach((b) => {
     b.addEventListener('click', () => {
       const lang = b.dataset.setLang!;
-      localStorage.setItem(KEY, lang);
+      localStorage.setItem(KEY, lang); // выбор запоминается между визитами
       apply(lang);
     });
   });
