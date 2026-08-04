@@ -5,11 +5,6 @@ import T from './T.astro';
 ---
 
 <div class="identity">
-  <span class="handle reveal" style="--d: 0.1s">
-    <i class="live"></i>
-    {profile.handle}
-  </span>
-
   <h1 class="name reveal" style="--d: 0.16s">
     {profile.nameLines.map((line, i) => <span class={i === 0 ? 'line' : 'line accent'}>{line}</span>)}
   </h1>
@@ -62,39 +57,6 @@ import T from './T.astro';
 
     .label {
       font-size: clamp(0.72rem, 1.7vh, 0.92rem);
-    }
-  }
-
-  .handle {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    padding: 0.28rem 0.7rem;
-    border: 1px solid var(--stroke);
-    border-radius: 999px;
-    background: var(--glass);
-    font-size: clamp(0.62rem, 1.4vh, 0.75rem);
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-  }
-
-  .live {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 0 0 var(--accent);
-    animation: ping 2s ease-out infinite;
-  }
-
-  @keyframes ping {
-    0% {
-      box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 70%, transparent);
-    }
-    70%,
-    100% {
-      box-shadow: 0 0 0 7px transparent;
     }
   }
 
@@ -170,11 +132,6 @@ import T from './T.astro';
     color: var(--muted);
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .live {
-      animation: none;
-    }
-  }
 </style>
 
 <script>
