@@ -36,5 +36,5 @@ export const socials: SocialLink[] = [
   },
   { name: 'Coins Donate', url: 'https://t.me/zicocoins', icon: 'coins', color: '#ffd166' },
   { name: 'Account Shop', url: 'https://t.me/zicoshopkanal', icon: 'shop', color: '#3ddc84' },
-  { name: 'Premium', url: 'https://t.me/zicosinfo', icon: 'premium', color: '#ffd166' },
+  { name: 'Premium', url: 'https://t.me/zicopremiumbot', icon: 'premium', color: '#ffd166' },
 ];
