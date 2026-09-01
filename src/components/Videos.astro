@@ -16,27 +16,26 @@ const channel = socials.find((s) => s.icon === 'youtube')?.url ?? '#';
 
   <div class="rail">
     {
+      // Обложка и название — одна ссылка: название само служит текстом ссылки
+      // и переключается вместе с языком, без aria-label на чужом языке.
       videos.map((v, i) => (
-        <article class="video reveal" style={`--d: ${0.3 + i * 0.06}s`}>
-          {/* Ролик открывается на YouTube, а не проигрывается здесь. */}
-          <a
-            class="frame"
-            href={`https://youtu.be/${v.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={v.title}
-          >
+        <a
+          class="video reveal"
+          href={`https://youtu.be/${v.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={`--d: ${0.3 + i * 0.06}s`}
+        >
+          <span class="frame">
             <img src={v.thumb} alt="" width="800" height="450" loading="lazy" decoding="async" />
             <span class="play" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="currentColor">
                 <path d="M8 5v14l11-7z" />
               </svg>
             </span>
-          </a>
-          <a class="title" href={`https://youtu.be/${v.id}`} target="_blank" rel="noopener noreferrer">
-            {v.title}
-          </a>
-        </article>
+          </span>
+          <span class="title"><T text={v.title} /></span>
+        </a>
       ))
     }
   </div>
@@ -103,6 +102,7 @@ const channel = socials.find((s) => s.icon === 'youtube')?.url ?? '#';
   .video {
     scroll-snap-align: start;
     min-width: 0;
+    display: block;
   }
 
   .frame {
@@ -110,17 +110,15 @@ const channel = socials.find((s) => s.icon === 'youtube')?.url ?? '#';
     display: block;
     width: 100%;
     aspect-ratio: 16 / 9;
-    padding: 0;
     border: 1px solid var(--stroke);
     border-radius: 12px;
     overflow: hidden;
     background: var(--glass);
-    cursor: pointer;
     transition: border-color 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .frame:hover,
-  .frame:focus-visible {
+  .video:hover .frame,
+  .video:focus-visible .frame {
     border-color: color-mix(in srgb, var(--accent) 60%, transparent);
     transform: translateY(-3px);
   }
@@ -153,7 +151,8 @@ const channel = socials.find((s) => s.icon === 'youtube')?.url ?? '#';
     margin-left: 2px;
   }
 
-  .frame:hover .play {
+  .video:hover .play,
+  .video:focus-visible .play {
     transform: scale(1.12);
     background: #ff3b3b;
   }
@@ -172,7 +171,8 @@ const channel = socials.find((s) => s.icon === 'youtube')?.url ?? '#';
     transition: color 0.2s ease;
   }
 
-  .title:hover {
+  .video:hover .title,
+  .video:focus-visible .title {
     color: var(--accent);
   }
 
