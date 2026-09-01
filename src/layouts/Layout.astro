@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import Background from '../components/Background.astro';
 import Spotlight from '../components/Spotlight.astro';
-import { defaultLang } from '../data/i18n';
+import { defaultLang, langs } from '../data/i18n';
 
 interface Props {
   title: string;
@@ -22,10 +22,10 @@ const { title, description } = Astro.props as Props;
     <meta property="og:description" content={description} />
     <meta property="og:image" content="/photo.jpg" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <script is:inline define:vars={{ defaultLang }}>
+    <script is:inline define:vars={{ defaultLang, langs }}>
       // Блокирующий скрипт: применяем сохранённый язык до первой отрисовки, чтобы избежать мигания.
       var saved = localStorage.getItem('zico-lang');
-      var lang = saved === 'ru' || saved === 'uz' || saved === 'ky' ? saved : defaultLang;
+      var lang = langs.indexOf(saved) !== -1 ? saved : defaultLang;
       document.documentElement.setAttribute('data-lang', lang);
       document.documentElement.setAttribute('lang', lang);
     </script>

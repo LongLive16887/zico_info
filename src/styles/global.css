@@ -107,17 +107,20 @@ a {
   display: none;
 }
 
-/* Без data-lang (JS отключён) показываем узбекский — язык по умолчанию. */
+/* Без data-lang (JS отключён) показываем узбекский — язык по умолчанию.
+   Новый язык требует пары строк здесь: CSS не умеет сравнивать два атрибута между собой. */
 html:not([data-lang]) .i18n[data-lang='uz'],
 html[data-lang='ru'] .i18n[data-lang='ru'],
 html[data-lang='uz'] .i18n[data-lang='uz'],
-html[data-lang='ky'] .i18n[data-lang='ky'] {
+html[data-lang='ky'] .i18n[data-lang='ky'],
+html[data-lang='en'] .i18n[data-lang='en'] {
   display: inline;
 }
 
 html:not([data-lang]) .i18n-block[data-lang='uz'],
 html[data-lang='ru'] .i18n-block[data-lang='ru'],
 html[data-lang='uz'] .i18n-block[data-lang='uz'],
-html[data-lang='ky'] .i18n-block[data-lang='ky'] {
+html[data-lang='ky'] .i18n-block[data-lang='ky'],
+html[data-lang='en'] .i18n-block[data-lang='en'] {
   display: block;
 }
