@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Marquee from '../components/Marquee.astro';
+import Intro from '../components/Intro.astro';
 import Socials from '../components/Socials.astro';
 import Videos from '../components/Videos.astro';
 import LangSwitch from '../components/LangSwitch.astro';
@@ -24,6 +25,7 @@ const ticker = [
     </div>
 
     <main class="stage-body">
+      <Intro />
       <Socials />
       <Videos />
     </main>

@@ -2,6 +2,8 @@
 export const profile = {
   name: 'ZICO EFOOTBALL',
   photo: '/photo.jpg', // используется только как og:image при шаринге ссылки
+  statValue: 900,
+  statSuffix: '+',
 };
 
 export type SocialLink = {
