@@ -49,6 +49,9 @@ a {
   height: 100svh;
   height: 100dvh;
   display: grid;
+  /* minmax(0,…) по обеим осям: иначе широкая лента видео распирает страницу
+     вместо того, чтобы прокручиваться внутри себя. */
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr) auto;
 }
 
@@ -62,32 +65,16 @@ a {
   border-bottom: 1px solid var(--stroke);
 }
 
+/* Ссылки сверху, ролики под ними; всё по центру вертикали. Боковые отступы
+   задают сами секции — лента видео должна доезжать до края экрана. */
 .stage-body {
   min-height: 0;
-  display: grid;
-  align-content: center;
-  justify-items: center;
-  gap: clamp(0.7rem, 2.4vh, 1.8rem);
-  padding: clamp(0.6rem, 2vh, 1.6rem) var(--edge);
-  grid-template-areas:
-    'photo'
-    'identity'
-    'socials';
-}
-
-@media (min-width: 800px) {
-  .stage-body {
-    grid-template-columns: auto minmax(0, 1fr);
-    grid-template-areas:
-      'photo identity'
-      'socials socials';
-    column-gap: clamp(1.4rem, 3.5vw, 3rem);
-    justify-items: stretch;
-    align-content: center;
-    max-width: 1120px;
-    margin: 0 auto;
-    width: 100%;
-  }
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(0.9rem, 3vh, 2.2rem);
+  padding: clamp(0.6rem, 2vh, 1.6rem) 0;
 }
 
 /* Анимируем только transform/opacity — они композитятся на GPU и не вызывают layout/paint. */

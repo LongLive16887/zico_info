@@ -1,9 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Marquee from '../components/Marquee.astro';
-import PhotoCard from '../components/PhotoCard.astro';
-import Identity from '../components/Identity.astro';
 import Socials from '../components/Socials.astro';
+import Videos from '../components/Videos.astro';
 import LangSwitch from '../components/LangSwitch.astro';
 import { profile } from '../data/profile';
 import { t, defaultLang } from '../data/i18n';
@@ -11,9 +10,9 @@ import { t, defaultLang } from '../data/i18n';
 const ticker = [
   'ZICO EFOOTBALL',
   'EFOOTBALL MOBILE',
-  `${profile.statValue}${profile.statSuffix} PREMIUM`,
   'COINS DONATE',
   'ACCOUNT SHOP',
+  'PREMIUM',
 ];
 ---
 
@@ -24,11 +23,10 @@ const ticker = [
       <LangSwitch />
     </div>
 
-    <div class="stage-body">
-      <PhotoCard />
-      <Identity />
+    <main class="stage-body">
       <Socials />
-    </div>
+      <Videos />
+    </main>
 
     <Marquee items={ticker} reverse />
   </div>

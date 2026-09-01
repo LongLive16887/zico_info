@@ -1,43 +1,63 @@
 ---
 import { socials } from '../data/profile';
+import { t } from '../data/i18n';
 import Icon from './Icon.astro';
+import T from './T.astro';
 ---
 
-<nav class="socials">
-  {
-    socials.map((s, i) => (
-      <a
-        class="social reveal"
-        href={s.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={`--brand: ${s.color}; --d: ${0.38 + i * 0.05}s`}
-      >
-        <span class="glow" />
-        <span class="icon">
-          <Icon name={s.icon as any} />
-        </span>
-        <span class="name">{s.name}</span>
-        <span class="arrow">↗</span>
-      </a>
-    ))
-  }
-</nav>
+<section class="links">
+  <h2 class="head"><T text={t.linksTitle} /></h2>
+
+  <nav class="socials">
+    {
+      socials.map((s, i) => (
+        <a
+          class="social reveal"
+          href={s.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={`--brand: ${s.color}; --d: ${0.06 + i * 0.05}s`}
+        >
+          <span class="glow" />
+          <span class="icon">
+            <Icon name={s.icon as any} />
+          </span>
+          <span class="name">{s.name}</span>
+          <span class="arrow">↗</span>
+        </a>
+      ))
+    }
+  </nav>
+</section>
 
 <style>
+  .links {
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 var(--edge);
+    min-width: 0;
+  }
+
+  .head {
+    margin: 0 0 clamp(0.4rem, 1.2vh, 0.7rem);
+    font-size: clamp(0.68rem, 1.5vh, 0.82rem);
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
   .socials {
-    grid-area: socials;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: clamp(0.4rem, 1.3vh, 0.7rem);
     width: 100%;
-    max-width: 1120px;
   }
 
   @media (min-width: 800px) {
     .socials {
       grid-template-columns: repeat(6, minmax(0, 1fr));
-      margin-top: clamp(0.4rem, 2.2vh, 1.4rem);
       gap: clamp(0.5rem, 1.6vh, 0.9rem);
     }
 

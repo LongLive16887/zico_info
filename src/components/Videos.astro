@@ -1,0 +1,209 @@
+---
+import { videos, socials } from '../data/profile';
+import { t } from '../data/i18n';
+import T from './T.astro';
+
+const channel = socials.find((s) => s.icon === 'youtube')?.url ?? '#';
+---
+
+<section class="videos">
+  <header class="head">
+    <h2><T text={t.videosTitle} /></h2>
+    <a class="all" href={channel} target="_blank" rel="noopener noreferrer">
+      <T text={t.watchAll} /> ↗
+    </a>
+  </header>
+
+  <div class="rail">
+    {
+      videos.map((v, i) => (
+        <article class="video reveal" style={`--d: ${0.3 + i * 0.06}s`}>
+          {/* Плеер подгружается только по клику — иначе три iframe тянули бы
+              скрипты YouTube на каждой загрузке страницы. */}
+          <button class="frame" type="button" data-video={v.id} aria-label={v.title}>
+            <img src={v.thumb} alt="" width="800" height="450" loading="lazy" decoding="async" />
+            <span class="play" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </span>
+          </button>
+          <a class="title" href={`https://youtu.be/${v.id}`} target="_blank" rel="noopener noreferrer">
+            {v.title}
+          </a>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .videos {
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    min-width: 0;
+  }
+
+  .head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0 var(--edge) clamp(0.4rem, 1.2vh, 0.7rem);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: clamp(0.68rem, 1.5vh, 0.82rem);
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .all {
+    font-size: clamp(0.66rem, 1.4vh, 0.78rem);
+    font-weight: 600;
+    color: var(--accent);
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+  }
+
+  .all:hover {
+    opacity: 0.75;
+  }
+
+  /* На узких экранах — горизонтальная лента, чтобы три ролика не выдавливали
+     страницу в вертикальный скролл. На широких — обычная сетка. */
+  .rail {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(72vw, 260px);
+    gap: clamp(0.5rem, 1.6vh, 0.85rem);
+    overflow-x: auto;
+    min-width: 0;
+    scroll-snap-type: x mandatory;
+    /* без scroll-padding снап притягивает карточку к самому краю scrollport
+       и «съедает» левый отступ ленты */
+    scroll-padding-inline: var(--edge);
+    padding: 0 var(--edge) 0.35rem;
+    scrollbar-width: none;
+  }
+
+  .rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .video {
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+
+  .frame {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    padding: 0;
+    border: 1px solid var(--stroke);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--glass);
+    cursor: pointer;
+    transition: border-color 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .frame:hover,
+  .frame:focus-visible {
+    border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+    transform: translateY(-3px);
+  }
+
+  .frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .play {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: clamp(34px, 6vh, 46px);
+    height: clamp(34px, 6vh, 46px);
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(10, 10, 16, 0.62);
+    backdrop-filter: blur(4px);
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease;
+  }
+
+  .play svg {
+    width: 55%;
+    height: 55%;
+    margin-left: 2px;
+  }
+
+  .frame:hover .play {
+    transform: scale(1.12);
+    background: #ff3b3b;
+  }
+
+  .title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-top: 0.4rem;
+    font-size: clamp(0.68rem, 1.5vh, 0.82rem);
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--ink);
+    transition: color 0.2s ease;
+  }
+
+  .title:hover {
+    color: var(--accent);
+  }
+
+  @media (min-width: 800px) {
+    .rail {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-auto-columns: auto;
+      overflow: visible;
+    }
+
+    .frame {
+      border-radius: 14px;
+    }
+  }
+</style>
+
+<script>
+  // Клик по обложке подменяет её на плеер с автозапуском.
+  document.querySelectorAll<HTMLButtonElement>('[data-video]').forEach((btn) => {
+    btn.addEventListener(
+      'click',
+      () => {
+        const id = btn.dataset.video!;
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+        iframe.title = btn.getAttribute('aria-label') ?? '';
+        iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+        iframe.allowFullscreen = true;
+        iframe.loading = 'lazy';
+        iframe.style.cssText = 'width:100%;height:100%;border:0;display:block';
+        btn.replaceChildren(iframe);
+        btn.classList.add('is-playing');
+        btn.style.cursor = 'default';
+      },
+      { once: true }
+    );
+  });
+</script>
