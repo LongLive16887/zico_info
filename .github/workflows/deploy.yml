@@ -41,6 +41,9 @@ jobs:
           command_timeout: 15m
           script: |
             set -euo pipefail
+            # ssh-action не гарантирует корректный HOME, а без него ssh не найдёт
+            # ~/.ssh/config с deploy-ключом и git уйдёт спрашивать логин.
+            export HOME="$(getent passwd "$(id -un)" | cut -d: -f6)"
             cd /opt/zico_info
             git fetch origin main
             git reset --hard origin/main
@@ -58,6 +61,9 @@ jobs:
           # что реально отдаёт сайт, с тем, что лежит в этом коммите.
           script: |
             set -euo pipefail
+            # ssh-action не гарантирует корректный HOME, а без него ssh не найдёт
+            # ~/.ssh/config с deploy-ключом и git уйдёт спрашивать логин.
+            export HOME="$(getent passwd "$(id -un)" | cut -d: -f6)"
             cd /opt/zico_info
             expected=$(git rev-parse --short HEAD)
             served=$(docker exec zico_info-web-1 cat /usr/share/nginx/html/build-id 2>/dev/null || echo "none")
