@@ -24,6 +24,13 @@ const { title, description } = Astro.props as Props;
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
     <link rel="apple-touch-icon" href="/favicon-180.png" />
+
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#07070b" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="ZICO" />
     <script is:inline define:vars={{ defaultLang, langs }}>
       // Блокирующий скрипт: применяем сохранённый язык до первой отрисовки, чтобы избежать мигания.
       var saved = localStorage.getItem('zico-lang');
@@ -36,5 +43,17 @@ const { title, description } = Astro.props as Props;
     <Background />
     <Spotlight />
     <slot />
+
+    <script>
+      // Регистрируем после load, чтобы установка воркера не конкурировала
+      // за сеть с отрисовкой первой страницы.
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {
+            // офлайн-режим просто не включится — на работу страницы это не влияет
+          });
+        });
+      }
+    </script>
   </body>
 </html>
