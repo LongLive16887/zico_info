@@ -1,7 +1,10 @@
-# Деплой на VPS: docker compose up -d --build
+# Деплой на VPS: GIT_SHA=$(git rev-parse --short HEAD) docker compose up -d --build
 services:
   web:
-    build: .
+    build:
+      context: .
+      args:
+        GIT_SHA: ${GIT_SHA:-unknown}
     restart: unless-stopped
     logging:
       driver: json-file

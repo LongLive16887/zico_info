@@ -5,7 +5,10 @@ WORKDIR /build
 COPY package*.json ./
 RUN npm ci --no-audit --no-fund
 COPY . .
-RUN npm run build
+# Метка сборки: по ней деплой проверяет, что контейнер реально пересобрался,
+# а не остался на старом образе (.git внутрь не копируется, отсюда build-arg).
+ARG GIT_SHA=unknown
+RUN npm run build && printf '%s' "$GIT_SHA" > dist/build-id
 
 FROM nginx:1.27-alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf

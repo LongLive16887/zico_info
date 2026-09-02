@@ -1,5 +1,11 @@
 name: Deploy
 
+# Два быстрых пуша подряд запускали два деплоя параллельно: один делал git pull,
+# второй в это время собирал образ из ещё не обновлённого кода.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [main]
@@ -29,8 +35,35 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          # Без script_stop упавшая команда не роняет шаг: код возвращает последняя
+          # в списке (prune, всегда успешный), и провал сборки выглядит как успех.
+          script_stop: true
+          command_timeout: 15m
           script: |
+            set -euo pipefail
             cd /opt/zico_info
-            git pull origin main
-            docker compose up -d --build
+            git fetch origin main
+            git reset --hard origin/main
+            GIT_SHA=$(git rev-parse --short HEAD) docker compose up -d --build
             docker image prune -f
+
+      - name: Verify deployed commit
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script_stop: true
+          # Образ мог не пересобраться, а шаг выше — всё равно пройти. Сверяем то,
+          # что реально отдаёт сайт, с тем, что лежит в этом коммите.
+          script: |
+            set -euo pipefail
+            cd /opt/zico_info
+            expected=$(git rev-parse --short HEAD)
+            served=$(docker exec zico_info-web-1 cat /usr/share/nginx/html/build-id 2>/dev/null || echo "none")
+            echo "commit on server: $expected"
+            echo "build-id served:  $served"
+            if [ "$expected" != "$served" ]; then
+              echo "::error::Container is serving '$served' but the checkout is at '$expected' — the image did not rebuild."
+              exit 1
+            fi
