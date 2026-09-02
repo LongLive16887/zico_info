@@ -5,7 +5,10 @@ import T from './T.astro';
 ---
 
 <section class="intro">
-  <h1 class="name reveal" style="--d: 0.04s">{profile.name}</h1>
+  <h1 class="name reveal" style="--d: 0.04s">
+    <span>{profile.name}</span>
+    <img class="badge" src="/badge.png" alt="Division 9 · 25-26" width="160" height="157" />
+  </h1>
   <p class="tagline reveal" style="--d: 0.09s"><T text={t.tagline} /></p>
 
   <p class="stat reveal" style="--d: 0.14s">
@@ -33,6 +36,10 @@ import T from './T.astro';
   }
 
   .name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45em;
     margin: 0;
     line-height: 1;
     font-size: clamp(1.05rem, 2.7vh, 1.7rem);
@@ -40,6 +47,16 @@ import T from './T.astro';
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--ink);
+  }
+
+  /* Значок дивизиона — размер привязан к кеглю имени, чтобы масштабировался вместе с ним. */
+  .badge {
+    width: auto;
+    height: 1.65em;
+    flex-shrink: 0;
+    /* последняя буква имени отбита трекингом — компенсируем, иначе зазор кажется больше */
+    margin-left: -0.16em;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
   }
 
   .tagline {
