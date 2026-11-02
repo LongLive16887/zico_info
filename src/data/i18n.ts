@@ -26,6 +26,25 @@ export const t = {
     ky: 'Менин атым Мухаммадазиз, мен Кыргызстандан eFootball Mobile боюнча стримермин. Жашым 19да. Бул жерде менин расмий барактарым чогултулган.',
     en: "My name is Muhammadaziz, I'm an eFootball Mobile streamer from Kyrgyzstan. I'm 19. All my official pages are here.",
   },
+  promoTitle: {
+    ru: 'В каком аккаунте нужные карты?',
+    uz: 'Kerakli kartalar qaysi akkauntda?',
+    ky: 'Керектүү карталар кайсы аккаунтта?',
+    en: 'Which account has the cards you need?',
+  },
+  promoText: {
+    ru: 'Соберите состав — найдём аккаунты именно с этими картами: с процентом совпадения, ценой и продавцом.',
+    uz: "Tarkibni yig'ing — aynan shu kartalar bor akkauntlarni topib beramiz: mos kelish foizi, narx va sotuvchi bilan.",
+    ky: 'Курамды жыйнаңыз — так ушул карталар бар аккаунттарды табып беребиз: дал келүү пайызы, баасы жана сатуучусу менен.',
+    en: "Build your squad — we'll find accounts with exactly these cards, with match rate, price and seller.",
+  },
+  // uz — дословно подпись кнопки в самом боте
+  promoCta: {
+    ru: 'Найти аккаунт',
+    uz: 'Akkaunt qidirish',
+    ky: 'Аккаунт издөө',
+    en: 'Find an account',
+  },
   linksTitle: {
     ru: 'Официальные страницы',
     uz: 'Rasmiy sahifalar',

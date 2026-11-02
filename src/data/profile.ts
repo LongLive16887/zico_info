@@ -8,6 +8,14 @@ export const profile = {
   statSuffix: '+',
 };
 
+// Баннер бота Akkaunt Top под текстом о себе. Тексты баннера — в i18n.ts (promo*).
+export const promo = {
+  url: 'https://t.me/akkaunttop_bot',
+  handle: '@akkaunttop_bot',
+  // название «Akkaunt Top» нарисовано на самом арте, поэтому отдельной надписью его не дублируем
+  art: '/akkaunttop.webp',
+};
+
 export type SocialLink = {
   name: string;
   url: string;

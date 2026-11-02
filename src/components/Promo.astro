@@ -1,0 +1,201 @@
+---
+import { promo } from '../data/profile';
+import { t } from '../data/i18n';
+import T from './T.astro';
+---
+
+<section class="promo">
+  {/* Ссылка — вся карточка: у рекламного блока попасть пальцем должно быть легко,
+      а не только в кнопку. Поэтому «кнопка» внутри — span, вложенные ссылки запрещены. */}
+  <a class="card reveal" href={promo.url} target="_blank" rel="noopener noreferrer" style="--d: 0.22s">
+    <span class="halo" aria-hidden="true"></span>
+    <img class="art" src={promo.art} alt="Akkaunt Top" width="360" height="360" decoding="async" />
+    <span class="head">
+      <span class="handle">{promo.handle}</span>
+      <h2 class="title"><T text={t.promoTitle} /></h2>
+    </span>
+    <p class="text"><T text={t.promoText} block /></p>
+    <span class="cta">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="m20 20-3.6-3.6"></path>
+      </svg>
+      <T text={t.promoCta} />
+    </span>
+  </a>
+</section>
+
+<style>
+  .promo {
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 var(--edge);
+    min-width: 0;
+  }
+
+  /* Синий — фирменный цвет Akkaunt Top: баннер нарочно выделяется на огненной палитре сайта. */
+  .card {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'art head'
+      'text text'
+      'cta cta';
+    align-items: center;
+    gap: clamp(0.7rem, 1.7vh, 0.9rem) 14px;
+    padding: clamp(0.9rem, 2.1vh, 1.15rem);
+    border-radius: 22px;
+    overflow: hidden;
+    background: linear-gradient(155deg, #1f6bff 0%, #0b5fff 46%, #0943d2 100%);
+    box-shadow: 0 16px 40px rgba(11, 95, 255, 0.3);
+    color: #fff;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(65% 40% at 82% 0%, rgba(255, 255, 255, 0.12), transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Золотое свечение за лого — в тон кольцу на самом арте. */
+  .halo {
+    position: absolute;
+    left: -34px;
+    top: -34px;
+    z-index: -1;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 210, 74, 0.34), transparent 66%);
+    pointer-events: none;
+  }
+
+  .card:hover,
+  .card:focus-visible {
+    box-shadow: 0 20px 50px rgba(11, 95, 255, 0.45);
+  }
+
+  /* Арт квадратный, кольцо доходит до краёв: круглая маска срезает только фон стадиона по углам. */
+  .art {
+    grid-area: art;
+    width: clamp(96px, 15vh, 124px);
+    height: clamp(96px, 15vh, 124px);
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow:
+      0 0 0 3px rgba(255, 214, 90, 0.55),
+      0 0 26px rgba(255, 196, 40, 0.5),
+      0 12px 26px rgba(2, 26, 92, 0.55);
+  }
+
+  .head {
+    grid-area: head;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .handle {
+    display: inline-flex;
+    align-items: center;
+    height: 26px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16);
+    font-size: 12.5px;
+    font-weight: 700;
+  }
+
+  .title {
+    margin: 0;
+    font-size: clamp(1.1rem, 2.75vh, 1.45rem);
+    line-height: 1.06;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+
+  .text {
+    grid-area: text;
+    margin: 0;
+    font-size: clamp(0.78rem, 1.7vh, 0.92rem);
+    line-height: 1.45;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.94);
+  }
+
+  .cta {
+    grid-area: cta;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    height: clamp(44px, 6vh, 50px);
+    border-radius: 14px;
+    background: linear-gradient(180deg, #ffe27d 0%, #f4a000 100%);
+    color: #2a1a00;
+    font-size: clamp(0.92rem, 1.9vh, 1rem);
+    font-weight: 800;
+    box-shadow: 0 9px 22px rgba(244, 160, 0, 0.35);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  }
+
+  .cta svg {
+    width: 19px;
+    height: 19px;
+    flex-shrink: 0;
+  }
+
+  /* Сама карточка двигаться не может: её transform держит анимация появления (.reveal). */
+  .card:hover .cta,
+  .card:focus-visible .cta {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(244, 160, 0, 0.5);
+  }
+
+  /* Широкий экран: лого — текст — кнопка в одну строку, иначе карточка вытягивается
+     во всю ширину с пустотой справа. */
+  @media (min-width: 800px) {
+    .card {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      grid-template-areas:
+        'art head cta'
+        'art text cta';
+      gap: 8px 24px;
+      padding: 22px 28px;
+    }
+
+    .art {
+      width: 140px;
+      height: 140px;
+    }
+
+    .head {
+      align-self: end;
+    }
+
+    .title {
+      font-size: 1.6rem;
+    }
+
+    .text {
+      align-self: start;
+      max-width: 56ch;
+      font-size: 0.95rem;
+    }
+
+    .cta {
+      height: 52px;
+      padding: 0 1.6rem;
+      white-space: nowrap;
+    }
+  }
+</style>

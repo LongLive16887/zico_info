@@ -7,6 +7,7 @@ const VERSION = new Date().toISOString().replace(/\D/g, '').slice(0, 14);
 const PRECACHE = [
   '/',
   '/badge.png',
+  '/akkaunttop.webp',
   '/favicon-32.png',
   '/favicon-192.png',
   '/manifest.webmanifest',

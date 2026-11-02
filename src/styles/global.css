@@ -25,7 +25,9 @@ body {
   color: var(--ink);
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
-  overflow: hidden;
+  /* Вертикальная прокрутка разрешена: с баннером страница на телефоне выше экрана,
+     а overflow: hidden молча обрезал бы низ без возможности долистать. */
+  overflow-x: hidden;
   position: relative;
 }
 
@@ -44,10 +46,11 @@ a {
   outline-offset: 3px;
 }
 
-/* Каркас: бегущие строки сверху/снизу, контент растягивается между ними. */
+/* Каркас: бегущие строки сверху/снизу, контент растягивается между ними.
+   min-height, а не height: если контент выше экрана, страница прокручивается. */
 .stage {
-  height: 100svh;
-  height: 100dvh;
+  min-height: 100svh;
+  min-height: 100dvh;
   display: grid;
   /* minmax(0,…) по обеим осям: иначе широкая лента видео распирает страницу
      вместо того, чтобы прокручиваться внутри себя. */
