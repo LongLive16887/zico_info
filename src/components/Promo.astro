@@ -1,32 +1,59 @@
 ---
-import { promo } from '../data/profile';
-import { t } from '../data/i18n';
+import { promos, type Promo } from '../data/profile';
 import T from './T.astro';
+
+// Иконки кнопок — штрихом: лупа ищет аккаунт, кубок ведёт в лигу
+const ctaIcons: Record<Promo['icon'], string> = {
+  search: 'M18 11a7 7 0 1 1-14 0 7 7 0 0 1 14 0ZM20 20l-3.6-3.6',
+  trophy: 'M7 4h10v5a5 5 0 0 1-10 0ZM7 9H5.5a2.5 2.5 0 0 1 0-5H7M17 9h1.5a2.5 2.5 0 0 0 0-5H17M12 14v6M8 20h8',
+};
 ---
 
 <section class="promo">
   {/* Ссылка — вся карточка: у рекламного блока попасть пальцем должно быть легко,
       а не только в кнопку. Поэтому «кнопка» внутри — span, вложенные ссылки запрещены. */}
-  <a class="card reveal" href={promo.url} target="_blank" rel="noopener noreferrer" style="--d: 0.22s">
-    <span class="halo" aria-hidden="true"></span>
-    <img class="art" src={promo.art} alt="Akkaunt Top" width="360" height="360" decoding="async" />
-    <span class="head">
-      <span class="handle">{promo.handle}</span>
-      <h2 class="title"><T text={t.promoTitle} /></h2>
-    </span>
-    <p class="text"><T text={t.promoText} block /></p>
-    <span class="cta">
-      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
-        <circle cx="11" cy="11" r="7"></circle>
-        <path d="m20 20-3.6-3.6"></path>
-      </svg>
-      <T text={t.promoCta} />
-    </span>
-  </a>
+  {
+    promos.map((p, i) => (
+      <a
+        class="card reveal"
+        data-tone={p.tone}
+        href={p.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={`--d: ${0.22 + i * 0.08}s`}
+      >
+        <span class="halo" aria-hidden="true" />
+        <img class="art" src={p.art} alt={p.alt} width="360" height="360" decoding="async" />
+        <span class="head">
+          <span class="handle">{p.handle}</span>
+          <h2 class="title">{typeof p.title === 'string' ? p.title : <T text={p.title} />}</h2>
+        </span>
+        <p class="text">
+          <T text={p.text} block />
+        </p>
+        <span class="cta">
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d={ctaIcons[p.icon]} />
+          </svg>
+          <T text={p.cta} />
+        </span>
+      </a>
+    ))
+  }
 </section>
 
 <style>
   .promo {
+    display: grid;
+    gap: clamp(0.6rem, 1.6vh, 0.9rem);
     width: 100%;
     max-width: 1120px;
     margin: 0 auto;
@@ -34,8 +61,11 @@ import T from './T.astro';
     min-width: 0;
   }
 
-  /* Синий — фирменный цвет Akkaunt Top: баннер нарочно выделяется на огненной палитре сайта. */
+  /* Фон — фирменный цвет продукта: баннеры нарочно выделяются на огненной палитре сайта.
+     blue — Akkaunt Top, navy — ZICO PRO LEAGUE (тёмно-синий с её лого). */
   .card {
+    --card-bg: linear-gradient(155deg, #1f6bff 0%, #0b5fff 46%, #0943d2 100%);
+    --card-shadow: 11, 95, 255;
     position: relative;
     isolation: isolate;
     display: grid;
@@ -49,10 +79,15 @@ import T from './T.astro';
     padding: clamp(0.9rem, 2.1vh, 1.15rem);
     border-radius: 22px;
     overflow: hidden;
-    background: linear-gradient(155deg, #1f6bff 0%, #0b5fff 46%, #0943d2 100%);
-    box-shadow: 0 16px 40px rgba(11, 95, 255, 0.3);
+    background: var(--card-bg);
+    box-shadow: 0 16px 40px rgba(var(--card-shadow), 0.3);
     color: #fff;
     transition: box-shadow 0.3s ease;
+  }
+
+  .card[data-tone='navy'] {
+    --card-bg: linear-gradient(155deg, #17399a 0%, #0c2266 46%, #06143d 100%);
+    --card-shadow: 0, 117, 247;
   }
 
   .card::before {
@@ -79,10 +114,10 @@ import T from './T.astro';
 
   .card:hover,
   .card:focus-visible {
-    box-shadow: 0 20px 50px rgba(11, 95, 255, 0.45);
+    box-shadow: 0 20px 50px rgba(var(--card-shadow), 0.45);
   }
 
-  /* Арт квадратный, кольцо доходит до краёв: круглая маска срезает только фон стадиона по углам. */
+  /* Арты квадратные, эмблема целиком вписана в круг: маска срезает только фон по углам. */
   .art {
     grid-area: art;
     width: clamp(96px, 15vh, 124px);
@@ -130,6 +165,8 @@ import T from './T.astro';
     line-height: 1.45;
     font-weight: 500;
     color: rgba(255, 255, 255, 0.94);
+    /* без одинокого слова на последней строке; где не поддерживается — обычный перенос */
+    text-wrap: pretty;
   }
 
   .cta {

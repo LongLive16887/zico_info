@@ -8,13 +8,75 @@ export const profile = {
   statSuffix: '+',
 };
 
-// Баннер бота Akkaunt Top под текстом о себе. Тексты баннера — в i18n.ts (promo*).
-export const promo = {
-  url: 'https://t.me/akkaunttop_bot',
-  handle: '@akkaunttop_bot',
-  // название «Akkaunt Top» нарисовано на самом арте, поэтому отдельной надписью его не дублируем
-  art: '/akkaunttop.webp',
+export type Promo = {
+  url: string;
+  handle: string; // подпись в пилюле над заголовком: куда ведёт баннер
+  art: string; // квадрат 360×360, на сайте показывается кругом
+  alt: string;
+  tone: 'blue' | 'navy'; // фон карточки в цветах продукта, сами цвета — в Promo.astro
+  icon: 'search' | 'trophy'; // иконка на кнопке
+  title: Record<Lang, string> | string; // строка — одна на все языки (название)
+  text: Record<Lang, string>;
+  cta: Record<Lang, string>;
 };
+
+// Рекламные баннеры под текстом о себе, сверху вниз.
+export const promos: Promo[] = [
+  {
+    url: 'https://t.me/akkaunttop_bot',
+    handle: '@akkaunttop_bot',
+    // название «Akkaunt Top» нарисовано на самом арте, поэтому отдельной надписью его не дублируем
+    art: '/akkaunttop.webp',
+    alt: 'Akkaunt Top',
+    tone: 'blue',
+    icon: 'search',
+    // uz — формулировки владельца (03.11.2026), остальные языки переведены с них.
+    // ru и ky короче узбекского нарочно: заголовок стоит в узкой колонке рядом с лого,
+    // и дословный перевод уходил в 4–5 строк
+    title: {
+      ru: 'Не находите идеальный аккаунт?',
+      uz: "O'zingizga ideal akkaunt topa olmayapsizmi?",
+      ky: 'Идеалдуу аккаунт таппай жатасызбы?',
+      en: "Can't find your ideal account?",
+    },
+    text: {
+      ru: 'Соберите свой состав — найдём аккаунт под него: с процентом совпадения, ценой и продавцом.',
+      uz: "Tarkibingizni yig'ing — tarkibingiz bo'yicha akkaunt topib beramiz: mos kelish foizi, narx va sotuvchi bilan.",
+      ky: 'Курамыңызды жыйнаңыз — курамыңыз боюнча аккаунт таап беребиз: дал келүү пайызы, баасы жана сатуучусу менен.',
+      en: "Build your squad — we'll find an account to match it, with match rate, price and seller.",
+    },
+    // uz — дословно подпись кнопки в самом боте
+    cta: {
+      ru: 'Найти аккаунт',
+      uz: 'Akkaunt qidirish',
+      ky: 'Аккаунт издөө',
+      en: 'Find an account',
+    },
+  },
+  {
+    url: 'https://proleague.zico.uz',
+    handle: 'proleague.zico.uz',
+    // на арте написано «ZICOS PRO LEAGUE», лига же называется ZICO PRO LEAGUE — заголовок по названию
+    art: '/proleague.webp',
+    alt: 'ZICO PRO LEAGUE',
+    tone: 'navy',
+    icon: 'trophy',
+    // uz — фраза владельца (05.11.2026), разделена по тире: название — в заголовок, остальное — в текст
+    title: 'ZICO PRO LEAGUE',
+    text: {
+      ru: 'Лига, где собрались игроки мирового уровня!',
+      uz: "Jahon miqyosidagi o'yinchilar jamlangan liga!",
+      ky: 'Дүйнөлүк деңгээлдеги оюнчулар чогулган лига!',
+      en: 'A league of world-class players!',
+    },
+    cta: {
+      ru: 'Перейти к лиге',
+      uz: "Ligaga o'tish",
+      ky: 'Лигага өтүү',
+      en: 'Go to the league',
+    },
+  },
+];
 
 export type SocialLink = {
   name: string;

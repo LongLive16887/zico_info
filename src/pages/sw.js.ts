@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { videos } from '../data/profile';
+import { promos, videos } from '../data/profile';
 
 // Версия фиксируется в момент сборки: каждый деплой = новый кэш, старый вычищается.
 const VERSION = new Date().toISOString().replace(/\D/g, '').slice(0, 14);
@@ -7,10 +7,10 @@ const VERSION = new Date().toISOString().replace(/\D/g, '').slice(0, 14);
 const PRECACHE = [
   '/',
   '/badge.png',
-  '/akkaunttop.webp',
   '/favicon-32.png',
   '/favicon-192.png',
   '/manifest.webmanifest',
+  ...promos.map((p) => p.art),
   ...videos.map((v) => v.thumb),
 ];
 
