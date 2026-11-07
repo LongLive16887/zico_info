@@ -1,0 +1,78 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { defaultLang } from '../data/i18n';
+import { profile } from '../data/profile';
+
+// Отдаётся nginx на любой несуществующий адрес с кодом 404 — раньше там открывалась главная
+// с кодом 200, и Google видел бесконечные копии визитки. Язык неизвестен, поэтому все четыре сразу.
+const lines = [
+  { lang: 'uz', text: 'Sahifa topilmadi' },
+  { lang: 'ky', text: 'Барак табылган жок' },
+  { lang: 'ru', text: 'Страница не найдена' },
+  { lang: 'en', text: 'Page not found' },
+];
+---
+
+<Layout lang={defaultLang} title={`404 — ${profile.name}`} description={lines[0].text} noindex>
+  <main class="nf">
+    <p class="code">404</p>
+    <ul class="lines">
+      {lines.map((l) => <li lang={l.lang}>{l.text}</li>)}
+    </ul>
+    <a class="home" href="/">zico.uz</a>
+  </main>
+</Layout>
+
+<style>
+  .nf {
+    min-height: 100svh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.1rem;
+    padding: 2rem var(--edge);
+    text-align: center;
+  }
+
+  .code {
+    margin: 0;
+    font-size: clamp(4.5rem, 22vw, 8rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .lines {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.3rem;
+    color: var(--muted);
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .lines li:first-child {
+    color: var(--ink);
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+
+  .home {
+    display: inline-flex;
+    align-items: center;
+    height: 48px;
+    padding: 0 1.6rem;
+    border-radius: 14px;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    color: #0a0a10;
+    font-weight: 800;
+  }
+</style>

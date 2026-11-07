@@ -1,9 +1,25 @@
 ---
-import { langs } from '../data/i18n';
+import { langs, pathFor, langFromUrl, t } from '../data/i18n';
+
+const current = langFromUrl(Astro.url);
 ---
 
-<div class="lang-switch">
-  {langs.map((l) => <button type="button" data-set-lang={l}>{l.toUpperCase()}</button>)}
+{/* Ссылки, а не кнопки: у каждого языка свой адрес, и поисковик находит все версии по ним.
+    Скрипт ниже перехватывает клик и меняет язык на месте, без перезагрузки. */}
+<div class="lang-switch" data-titles={JSON.stringify(t.metaTitle)}>
+  {
+    langs.map((l) => (
+      <a
+        href={pathFor(l)}
+        hreflang={l}
+        lang={l}
+        data-set-lang={l}
+        aria-current={l === current ? 'page' : undefined}
+      >
+        {l.toUpperCase()}
+      </a>
+    ))
+  }
 </div>
 
 <style>
@@ -18,49 +34,61 @@ import { langs } from '../data/i18n';
     padding: 0.22rem;
   }
 
-  button {
-    appearance: none;
-    border: none;
-    background: transparent;
+  a {
+    display: inline-block;
     color: var(--muted);
-    font: inherit;
     font-size: clamp(0.62rem, 1.4vh, 0.72rem);
     font-weight: 800;
     letter-spacing: 0.06em;
     padding: 0.3rem 0.55rem;
     border-radius: 999px;
-    cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 
-  button:hover {
+  a:hover {
     color: var(--ink);
   }
 
-  button[aria-current='true'] {
+  a[aria-current='page'] {
     background: linear-gradient(120deg, var(--accent), var(--accent-2));
     color: #0a0a10;
   }
 </style>
 
 <script>
-  const KEY = 'zico-lang';
-  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-set-lang]');
+  import type { Lang } from '../data/i18n';
 
-  function apply(lang: string) {
-    document.documentElement.setAttribute('data-lang', lang);
+  const KEY = 'zico-lang';
+  const root = document.querySelector<HTMLElement>('.lang-switch')!;
+  const links = root.querySelectorAll<HTMLAnchorElement>('[data-set-lang]');
+  const titles: Record<Lang, string> = JSON.parse(root.dataset.titles!);
+
+  function apply(lang: Lang, href: string) {
     document.documentElement.setAttribute('lang', lang);
-    buttons.forEach((b) => b.setAttribute('aria-current', String(b.dataset.setLang === lang)));
+    document.title = titles[lang];
+    document.querySelectorAll<HTMLElement>('[data-i18n]').forEach((el) => {
+      el.textContent = JSON.parse(el.dataset.i18n!)[lang];
+    });
+    links.forEach((a) => {
+      if (a.dataset.setLang === lang) a.setAttribute('aria-current', 'page');
+      else a.removeAttribute('aria-current');
+    });
+    // replace, а не push: «назад» уводит с сайта, а не перебирает языки
+    history.replaceState(null, '', href);
   }
 
-  // Язык уже проставлен блокирующим скриптом в <head> — здесь только подсвечиваем активную кнопку.
-  apply(document.documentElement.getAttribute('data-lang')!);
-
-  buttons.forEach((b) => {
-    b.addEventListener('click', () => {
-      const lang = b.dataset.setLang!;
-      localStorage.setItem(KEY, lang); // выбор запоминается между визитами
-      apply(lang);
+  links.forEach((a) => {
+    a.addEventListener('click', (e) => {
+      // Ctrl/Cmd/Shift-клик — открыть язык в новой вкладке, как обычную ссылку
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      const lang = a.dataset.setLang as Lang;
+      try {
+        localStorage.setItem(KEY, lang); // выбор запоминается между визитами
+      } catch {
+        // без хранилища (приватный режим) язык просто не запомнится
+      }
+      apply(lang, a.getAttribute('href')!);
     });
   });
 </script>

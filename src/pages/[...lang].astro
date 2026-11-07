@@ -1,0 +1,98 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Marquee from '../components/Marquee.astro';
+import Intro from '../components/Intro.astro';
+import Promo from '../components/Promo.astro';
+import Socials from '../components/Socials.astro';
+import Videos from '../components/Videos.astro';
+import LangSwitch from '../components/LangSwitch.astro';
+import { profile, socials } from '../data/profile';
+import { t, langs, defaultLang, pathFor, type Lang } from '../data/i18n';
+
+// Одна и та же визитка на каждом языке: узбекская на корне, остальные — /ru/, /ky/, /en/.
+export function getStaticPaths() {
+  return langs.map((lang) => ({
+    params: { lang: lang === defaultLang ? undefined : lang },
+    props: { lang },
+  }));
+}
+const { lang } = Astro.props as { lang: Lang };
+
+const ticker = [
+  'ZICO EFOOTBALL',
+  'EFOOTBALL MOBILE',
+  'COINS DONATE',
+  'ACCOUNT SHOP',
+  'PREMIUM',
+];
+
+// Разметка для поисковиков: сайт и человек за ним. sameAs связывает zico.uz с его каналами —
+// по ним Google понимает, что сайт и YouTube-канал принадлежат одному человеку.
+const home = new URL('/', Astro.site).href;
+const page = new URL(pathFor(lang), Astro.site).href;
+const profiles = socials
+  .filter((s) => ['youtube', 'instagram', 'telegram'].includes(s.icon)) // личные страницы, не магазины
+  .map((s) => {
+    const url = new URL(s.url);
+    return url.origin + url.pathname; // без ?si= и прочих меток из ссылок «Поделиться»
+  });
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': `${home}#website`,
+      url: home,
+      name: profile.name,
+      inLanguage: langs,
+      publisher: { '@id': `${home}#person` },
+    },
+    {
+      '@type': 'ProfilePage',
+      '@id': `${page}#page`,
+      url: page,
+      name: t.metaTitle[lang],
+      inLanguage: lang,
+      isPartOf: { '@id': `${home}#website` },
+      mainEntity: { '@id': `${home}#person` },
+    },
+    {
+      '@type': 'Person',
+      '@id': `${home}#person`,
+      name: profile.realName,
+      alternateName: profile.name,
+      description: t.tagline[lang],
+      url: home,
+      image: new URL(profile.photo, Astro.site).href,
+      nationality: { '@type': 'Country', name: profile.country },
+      sameAs: profiles,
+    },
+  ],
+};
+---
+
+<Layout lang={lang} title={t.metaTitle[lang]} description={t.metaDescription[lang]}>
+  {/* < экранируем: строка из данных не должна закрыть тег script раньше времени */}
+  <script
+    is:inline
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')}
+  />
+
+  <div class="stage">
+    <div class="topbar">
+      <Marquee items={ticker} />
+      <LangSwitch />
+    </div>
+
+    <main class="stage-body">
+      <Intro />
+      <Promo />
+      <Socials />
+      <Videos />
+    </main>
+
+    <Marquee items={ticker} reverse />
+  </div>
+</Layout>

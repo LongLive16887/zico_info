@@ -1,14 +1,13 @@
 ---
-import { langs, type Lang } from '../data/i18n';
+import { langFromUrl, type Lang } from '../data/i18n';
 
 interface Props {
   text: Record<Lang, string>;
-  block?: boolean;
 }
-const { text, block } = Astro.props as Props;
-const cls = block ? 'i18n i18n-block' : 'i18n';
+const { text } = Astro.props as Props;
+const lang = langFromUrl(Astro.url);
 ---
 
-{/* Все варианты рендерятся сразу, видимый выбирает CSS по data-lang на <html>:
-    переключение мгновенное и работает даже без JS. */}
-{langs.map((lang) => <span class={cls} data-lang={lang} set:text={text[lang]} />)}
+{/* В HTML — только текст на языке страницы: его и видит поисковик, у каждого языка свой адрес.
+    Остальные переводы лежат в data-i18n — переключатель подставляет их на месте, без перезагрузки. */}
+<span data-i18n={JSON.stringify(text)} set:text={text[lang]} />

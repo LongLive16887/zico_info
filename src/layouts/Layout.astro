@@ -2,25 +2,51 @@
 import '../styles/global.css';
 import Background from '../components/Background.astro';
 import Spotlight from '../components/Spotlight.astro';
-import { defaultLang, langs } from '../data/i18n';
+import { defaultLang, langs, pathFor, type Lang } from '../data/i18n';
+import { profile } from '../data/profile';
 
 interface Props {
+  lang: Lang;
   title: string;
   description: string;
+  // Страница не для поиска (404): без канонического адреса и языковых версий
+  noindex?: boolean;
 }
-const { title, description } = Astro.props as Props;
+const { lang, title, description, noindex } = Astro.props as Props;
+
+// Ссылки для поисковиков и превью в мессенджерах — только абсолютные
+const abs = (path: string) => new URL(path, Astro.site).href;
+const ogLocale: Record<Lang, string> = { uz: 'uz_UZ', ru: 'ru_RU', ky: 'ky_KG', en: 'en_US' };
 ---
 
 <!doctype html>
-<html lang={defaultLang}>
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {
+      noindex ? (
+        <meta name="robots" content="noindex" />
+      ) : (
+        <>
+          <link rel="canonical" href={abs(pathFor(lang))} />
+          {/* Версии страницы на других языках: Google покажет человеку ту, что на его языке */}
+          {langs.map((l) => (
+            <link rel="alternate" hreflang={l} href={abs(pathFor(l))} />
+          ))}
+          <link rel="alternate" hreflang="x-default" href={abs(pathFor(defaultLang))} />
+          <meta property="og:url" content={abs(pathFor(lang))} />
+        </>
+      )
+    }
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={profile.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content="/photo.jpg" />
+    <meta property="og:image" content={abs(profile.photo)} />
+    <meta property="og:locale" content={ogLocale[lang]} />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
     <link rel="apple-touch-icon" href="/favicon-180.png" />
@@ -31,13 +57,23 @@ const { title, description } = Astro.props as Props;
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="ZICO" />
-    <script is:inline define:vars={{ defaultLang, langs }}>
-      // Блокирующий скрипт: применяем сохранённый язык до первой отрисовки, чтобы избежать мигания.
-      var saved = localStorage.getItem('zico-lang');
-      var lang = langs.indexOf(saved) !== -1 ? saved : defaultLang;
-      document.documentElement.setAttribute('data-lang', lang);
-      document.documentElement.setAttribute('lang', lang);
-    </script>
+    {
+      lang === defaultLang && !noindex && (
+        <script is:inline define:vars={{ langs, defaultLang }}>
+          // Блокирующий скрипт: на корне сразу уводим на язык, выбранный в прошлый раз,
+          // пока ничего не отрисовано. Поисковик приходит без сохранённого выбора и видит узбекский.
+          try {
+            var saved = localStorage.getItem('zico-lang');
+            if (saved !== defaultLang && langs.indexOf(saved) !== -1) {
+              location.replace('/' + saved + '/' + location.search + location.hash);
+            }
+          } catch (e) {
+            // без доступа к хранилищу остаёмся на языке по умолчанию
+          }
+        </script>
+      )
+    }
+    <slot name="head" />
   </head>
   <body>
     <Background />

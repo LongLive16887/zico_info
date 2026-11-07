@@ -3,7 +3,9 @@ import type { Lang } from './i18n';
 
 export const profile = {
   name: 'ZICO EFOOTBALL',
-  photo: '/photo.jpg', // используется только как og:image при шаринге ссылки
+  realName: 'Muhammadaziz', // для поисковиков (разметка Person) — на странице имя есть в тексте о себе
+  country: 'Kyrgyzstan',
+  photo: '/photo.jpg', // используется только как og:image при шаринге ссылки и фото в разметке
   statValue: 900,
   statSuffix: '+',
 };

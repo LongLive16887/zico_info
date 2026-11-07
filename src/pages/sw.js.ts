@@ -45,15 +45,23 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return;
 
   // Страница: сначала сеть, чтобы правки доезжали сразу; кэш — только запасной путь офлайн.
+  // Каждый язык кэшируется под своим адресом и только удачный ответ: 404 не должна подменить главную.
   if (req.mode === 'navigate') {
     event.respondWith(
       fetch(req)
         .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE).then((cache) => cache.put('/', copy));
+          if (res.ok) {
+            const copy = res.clone();
+            caches.open(CACHE).then((cache) => cache.put(url.pathname, copy));
+          }
           return res;
         })
-        .catch(() => caches.match('/').then((hit) => hit || Response.error()))
+        .catch(() =>
+          caches
+            .match(url.pathname)
+            .then((hit) => hit || caches.match('/'))
+            .then((hit) => hit || Response.error())
+        )
     );
     return;
   }
